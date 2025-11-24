@@ -1,4 +1,5 @@
 import re
+from utils.commonUtils import CommonUtils
 
 def find_first_sentence(phrase, text):
     # Разбиваем на предложения
@@ -19,7 +20,8 @@ def find_first_sentence(phrase, text):
 
 def main():
     # ===== Загрузка текста =====
-    text_file = "documents/The secret garden.txt"
+    path = CommonUtils.get_project_root()
+    text_file = path + "\\documents\\The secret garden.txt"
     with open(text_file, "r", encoding="utf-8") as f:
         text = f.read()
 
