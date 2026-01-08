@@ -91,3 +91,8 @@ POST /api/words/review       — submit revision results
 POST /api/texts/upload       — download the book text
 GET /api/stats/progress      — get statistics
 GET /api/tts/{word_id}       — get a link to the audio
+
+
+Libraries versions:
+SQLAlchemy == 1.4.17
+psycopg2==2.9.11

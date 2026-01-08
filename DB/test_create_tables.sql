@@ -1,45 +1,104 @@
 ﻿lfc database
 
-CREATE TABLE public.roles
-(
-    id varchar(50) PRIMARY KEY,
-	role varchar(30)
-);
-
 CREATE TABLE public.users
 (
     id varchar(50) PRIMARY KEY,
 	name varchar(50),
     username varchar(50),
-	password varchar(50)
+	password varchar(50),
+	email varchar(50),
+	initiallevel varchar(2),
+	createdat TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+	lastloginat TIMESTAMP WITH TIME ZONE,
+	isactive BOOLEAN NOT NULL DEFAULT true
 );
-
-CREATE TABLE public.userroles
-(
-    id varchar(50) PRIMARY KEY,
-    userid varchar(50),
-	roleid varchar(50)
-);
-
-INSERT INTO roles (
-	id , role) 
-	VALUES ('9b44a1da45d14bf190775a8a1c218a86',	'USER'),
-		   ('a83618b2915447688156f1106b7be702',	'ADMIN');
-		  
+  
 INSERT INTO users (
-	id , name, username, password) 
-	VALUES ('b83618b2915447688156f1106b7be703',	'Кузьма', 'Administrator', 'Administrator');
+	id , name, username, password, email, initiallevel) 
+	VALUES ('b83618b2915447688156f1106b7be703',	'Кузьма', 'administrator', 'administrator', 'kyz@mail.ru', 'B1');
 	
-INSERT INTO userroles (
-	id , userid, roleid) 
-	VALUES ('9a55a1da45d14bf190775a8a1c218a86',	'b83618b2915447688156f1106b7be703', 'a83618b2915447688156f1106b7be702');	
+CREATE TABLE public.usersettings
+(
+	userid varchar(50),
+	interfacelanguage VARCHAR(10) NOT NULL DEFAULT 'ru',
+	learninglanguage VARCHAR(10) NOT NULL DEFAULT 'en',
+	preferredvoice VARCHAR(50),
+	dailywordlimit INTEGER NOT NULL DEFAULT 20,
+	enableaudio BOOLEAN NOT NULL DEFAULT true,
+	enablenotifications BOOLEAN NOT NULL DEFAULT true,
+	timezone VARCHAR(50) NOT NULL DEFAULT 'UTC'
+);
 
 
 CREATE TABLE public.words
 (
     id varchar(50) PRIMARY KEY,
-	title varchar(50),
-    dataofexp timestamp
-	userid VARCHAR REFERENCES users(id)
+	texten varchar(100),
+	transcription varchar(100),
+	textl varchar(100),
+	examplesentence varchar(500),
+	difficultylevel varchar(2),
+	audiourl varchar(500),
+	createdat TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 
+CREATE TABLE public.userwordprogress
+(
+    id varchar(50) PRIMARY KEY,
+	userid varchar(50),
+	wordid varchar(50),
+	lastreviewed TIMESTAMP WITH TIME ZONE,
+	nextreviewed TIMESTAMP WITH TIME ZONE,
+	successrate REAL NOT NULL DEFAULT 0.0,
+	reviewcount INTEGER NOT NULL DEFAULT 0,
+	isknown BOOLEAN NOT NULL DEFAULT false,
+	createdat TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+);
+
+CREATE TABLE wordreviews (
+    id varchar(50) PRIMARY KEY,
+	userid varchar(50),
+	wordid varchar(50),
+    reviewedat TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+    iscorrect BOOLEAN NOT NULL,
+    responsetimems INTEGER
+);
+
+CREATE TABLE public.texts
+(
+    id varchar(50) PRIMARY KEY,
+	userid varchar(50),
+	title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+	language VARCHAR(10) NOT NULL DEFAULT 'en',
+    createdat TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+);
+
+-- ---------- TEXT VOCABULARY STATS ----------
+CREATE TABLE public.textvocabularystats (
+    id varchar(50) PRIMARY KEY,
+    textid varchar(50) NOT NULL,
+    totalwords INTEGER NOT NULL,
+    knownwords INTEGER NOT NULL,
+    unknownwords INTEGER NOT NULL,
+    coveragepercent REAL NOT NULL,
+    computedat TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+);
+
+-- ---------- EXAMS ----------
+CREATE TABLE public.exams (
+    id varchar(50) PRIMARY KEY,
+	userid varchar(50),
+    title VARCHAR(255) NOT NULL,
+    difficultylevel VARCHAR(2),
+    score REAL,
+    takenat TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+);
+
+-- ---------- ML WORD FEATURES (OPTIONAL) ----------
+CREATE TABLE public.mlwordfeatures (
+    wordid varchar(50) PRIMARY KEY,
+    frequencyrank INTEGER,
+    avgsuccessrate REAL,
+    avgreviewinterval REAL
+);
