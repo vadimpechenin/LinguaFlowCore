@@ -36,6 +36,7 @@ CREATE TABLE public.words
 	texten varchar(100),
 	transcription varchar(100),
 	textl varchar(100),
+	partOfSpeech varchar(50),
 	examplesentence varchar(500),
 	difficultylevel varchar(2),
 	audiourl varchar(500),

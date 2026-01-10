@@ -35,6 +35,10 @@ class SQLDataBase():
         self.session.add(type_object)
         self.session.commit()
 
+    def databaseAddListCommit(self,object_list):
+        self.session.bulk_save_objects(object_list)
+        self.session.commit()
+
     @contextmanager
     def session_scope(self):
         session = self.session

@@ -6,9 +6,8 @@ class UUIDClass():
     def __init__(self):
 
         self.usersIDList = []
-        self.rolesIDList = []
-        self.userRoleIDList = []
-        self.documentsIDList = []
+        self.textsIDList = []
+        self.wordsIDList = []
 
     @staticmethod
     def geterateUUIDWithout_():
