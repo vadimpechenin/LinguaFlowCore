@@ -93,6 +93,11 @@ GET /api/stats/progress      — get statistics
 GET /api/tts/{word_id}       — get a link to the audio
 
 
-Libraries versions:
+##Libraries versions:
 SQLAlchemy == 1.4.17
-psycopg2==2.9.11
+
+psycopg2 == 2.9.11
+
+pydantic == 2.11.7
+
+passlib == 1.7.4
