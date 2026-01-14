@@ -1,4 +1,4 @@
-from core.base import *
+from db.core.base import *
 
 class MLWordFeatures(Base):
     __tablename__ = "mlwordfeatures"

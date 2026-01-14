@@ -1,4 +1,4 @@
-from core.base import *
+from db.core.base import *
 
 class UserSettings(Base):
     __tablename__ = "usersettings"

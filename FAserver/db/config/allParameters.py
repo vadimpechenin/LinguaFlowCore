@@ -1,6 +1,6 @@
-from config.modelsParameters.textsParams import TextsParameters
-from config.modelsParameters.wordsParams import WordsParameters
-from config.namesOfTables import NamesOfTables
+from db.config.modelsParameters.textsParams import TextsParameters
+from db.config.modelsParameters.wordsParams import WordsParameters
+from db.config.namesOfTables import NamesOfTables
 
 class AllParameters():
     def __init__(self):

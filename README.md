@@ -101,3 +101,7 @@ psycopg2 == 2.9.11
 pydantic == 2.11.7
 
 passlib == 1.7.4
+
+pytest == 8.4.1
+
+httpx == 0.28.1

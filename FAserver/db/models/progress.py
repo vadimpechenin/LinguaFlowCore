@@ -1,4 +1,4 @@
-from core.base import *
+from db.core.base import *
 
 class UserWordProgress(Base):
     __tablename__ = "userwordprogress"

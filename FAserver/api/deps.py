@@ -1,10 +1,17 @@
+from typing import Generator
+from sqlalchemy.orm import Session
+
 from db.core.session import SQLDataBase
 
+db = SQLDataBase()
 
-def get_db():
-    db = SQLDataBase()
-    db.create_session()
+def get_db() -> Generator[Session, None, None]:
+    session = db.get_session()
     try:
-        yield db.session
+        yield session
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
     finally:
-        db.sessionCloseAll()
+        session.close()
