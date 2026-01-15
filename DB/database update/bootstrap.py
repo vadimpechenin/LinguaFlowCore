@@ -29,7 +29,7 @@ class Bootstrap():
         #config.SQLDataBaseObj.recreate_database()
 
         #res = config.SQLDataBaseObj.select_all_params_in_table(config.AllParametersObj.namesOfTables.UsersName)
-        if (1==0):
+        if (1==1):
             #Создание таблицы Words
             parameter =WordsParameter(config.SQLDataBaseObj,
                                         config.AllParametersObj.namesOfTables.WordsName,
@@ -37,7 +37,7 @@ class Bootstrap():
                                         config.UUIDClassObj)
 
             config.MainHandlerObj.initFunction(0, parameter)
-        if (1 == 0):
+        if (1 == 1):
             # Создание таблицы UserSettings
             parameter = UserSettingsParameter(config.SQLDataBaseObj,
                                        config.AllParametersObj.namesOfTables.UserSettings)
