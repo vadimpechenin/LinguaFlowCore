@@ -3,12 +3,14 @@ from typing import Optional
 
 
 class WordCreate(BaseModel):
-    text_en: str
+    texten: str
     transcription: Optional[str]
-    text_ru: Optional[str]
-    example_sentence: Optional[str]
-    difficulty_level: str
-
+    textl: Optional[str]
+    partofspeech: Optional[str]
+    examplesentence: Optional[str]
+    difficultylevel: str
+    #audiourl: Optional[str]
+    #createdat: datetime
 
 class WordRead(WordCreate):
     id: str
