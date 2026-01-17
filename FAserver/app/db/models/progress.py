@@ -16,8 +16,8 @@ class UserWordProgress(Base):
         nullable=False
     )
 
-    lastreviewedat = Column(TIMESTAMP(timezone=True))
-    nextreviewat = Column(TIMESTAMP(timezone=True))
+    lastreviewed = Column(TIMESTAMP(timezone=True))
+    nextreviewed = Column(TIMESTAMP(timezone=True))
 
     successrate = Column(Float, nullable=False, default=0.0)
     reviewcount = Column(Integer, nullable=False, default=0)

@@ -24,18 +24,20 @@ def review_word(
             id=ID,
             userid=user_id,
             wordid=word_id,
+            reviewcount = 0,
+            successrate = 0,
         )
         db.add(progress)
 
     progress.reviewcount += 1
-    progress.lastreviewedat = datetime.utcnow()
+    progress.lastreviewed = datetime.utcnow()
 
     if is_correct:
         progress.successrate = min(progress.successrate + 0.1, 1.0)
-        progress.nextreviewat = datetime.utcnow() + timedelta(days=3)
+        progress.nextrevied = datetime.utcnow() + timedelta(days=3)
     else:
         progress.successrate = max(progress.successrate - 0.2, 0.0)
-        progress.nextreviewat = datetime.utcnow() + timedelta(days=1)
+        progress.nextrevied = datetime.utcnow() + timedelta(days=1)
 
     ID = UUIDClass.geterateUUIDWithout_()
 
