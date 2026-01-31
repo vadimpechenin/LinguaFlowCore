@@ -15,3 +15,24 @@ http://127.0.0.1:8000/docs
 bash:
 
 pytest -v
+
+## Architecture
+┌──────────────┐        HTTP / async
+│   Frontend   │ ─────────────────────┐
+└──────────────┘                      │
+                                      ▼
+┌──────────────────────────┐     ┌──────────────────────────┐
+│  Core API (FastAPI)      │     │   ML Service (FastAPI)   │
+│                          │     │                          │
+│  Auth, Users             │     │  Text analysis           │
+│  Words                   │     │  CEFR classification     │
+│  Progress                │◄───►│  Spaced repetition       │
+│  Exams                   │     │  Difficulty prediction   │
+│                          │     │  Recommendation engine   │
+└──────────────────────────┘     └──────────────────────────┘
+        │                                   │
+        ▼                                   ▼
+┌──────────────┐                   ┌──────────────┐
+│ PostgreSQL   │                   │  Model Store │
+│ (Business)   │                   │  (joblib)    │
+└──────────────┘                   └──────────────┘
