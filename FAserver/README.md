@@ -17,6 +17,8 @@ bash:
 pytest -v
 
 ## Architecture
+
+```mermaid
 ┌──────────────┐        HTTP / async
 │   Frontend   │ ─────────────────────┐
 └──────────────┘                      │
@@ -36,3 +38,4 @@ pytest -v
 │ PostgreSQL   │                   │  Model Store │
 │ (Business)   │                   │  (joblib)    │
 └──────────────┘                   └──────────────┘
+```

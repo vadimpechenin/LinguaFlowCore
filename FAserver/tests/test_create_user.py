@@ -1,6 +1,6 @@
-def test_get_user(client):
+def test_create_user(client):
     create_response = client.post(
-        "/users/",
+        "/auth/register/",
         json={
             "name": "Test",
             "username": "test_user",

@@ -105,3 +105,5 @@ passlib == 1.7.4
 pytest == 8.4.1
 
 httpx == 0.28.1
+
+python-jose == 3.5.0

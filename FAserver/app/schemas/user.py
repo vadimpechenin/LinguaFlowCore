@@ -2,15 +2,7 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
 
-class UserCreate(BaseModel):
-    name: str
-    username: str
-    email: str
-    password: str
-    initiallevel: str
-
-
-class UserRead(BaseModel):
+class UserResponse(BaseModel):
     id: str
     name: str
     username: str
