@@ -32,11 +32,11 @@ def get_current_user(
 ) -> User:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: str = payload.get("sub")
+        userid: str = payload.get("sub")
     except JWTError:
         raise HTTPException(401, "Invalid token")
 
-    user = db.query(User).get(int(user_id))
+    user = db.query(User).get(int(userid))
     if not user:
         raise HTTPException(404, "User not found")
     return user
