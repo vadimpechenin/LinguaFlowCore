@@ -3,20 +3,21 @@ from typing import List
 
 #TODO еще может меняться
 class ExamStart(BaseModel):
-    difficulty: str
-    size: int = 20
+    title: str
+    difficultylevel: str
+    score: float
 
 class ExamQuestion(BaseModel):
-    wordid: int
+    wordid: str
     question: str
 
 class ExamResponse(BaseModel):
-    examid: int
+    examid: str
     questions: List[ExamQuestion]
 
 class ExamSubmit(BaseModel):
     answers: list
 
 class ExamResult(BaseModel):
-    score: int
+    score: float
     estimated_level: str

@@ -1,5 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
+from datetime import datetime
 
 
 class WordCreate(BaseModel):
@@ -16,3 +17,14 @@ class WordRead(WordCreate):
     id: str
 
     model_config = ConfigDict(from_attributes=True)
+
+class WordResponse(BaseModel):
+    id: str
+    texten: str
+    transcription: str | None
+    textl: str
+    partofspeech: str
+    examplesentence: str | None
+    difficultylevel: str
+    audiourl: str | None
+    createdat: datetime

@@ -6,6 +6,7 @@ from app.api.deps import get_current_user
 from app.api.deps import get_db
 from app.db.models.exam import Exam
 from app.schemas.exam import ExamStart, ExamResponse, ExamResult
+from app.crud.exam import create_exam
 
 #TODO не реализована, еще делать и тестировать
 ML_SERVICE_URL = "http://ml-api:8000"
@@ -32,9 +33,7 @@ async def start_exam(
         questions = ml_resp.json()["questions"]
     #TODO упаковать в crud
     exam = Exam(user_id=user.id, difficultylevel=data.difficulty)
-    db.add(exam)
-    db.commit()
-    db.refresh(exam)
+
 
     return {"examid": exam.id, "questions": questions}
 
