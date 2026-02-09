@@ -11,7 +11,7 @@ from app.crud.exam import create_exam
 #TODO не реализована, еще делать и тестировать
 ML_SERVICE_URL = "http://ml-api:8000"
 
-router = APIRouter(prefix="/exam", tags=["Exams"])
+router = APIRouter(prefix="/exams", tags=["Exams"])
 
 
 @router.post("/start", response_model=ExamResponse)
@@ -20,6 +20,14 @@ async def start_exam(
     user=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    """
+    :param data:
+    :param user:
+    :param db:
+    :return:
+    """
+    """
+    Пока убираем, нет этого сервиса
     async with httpx.AsyncClient() as client:
         ml_resp = await client.post(
             f"{ML_SERVICE_URL}/ml/exam/start",
@@ -31,11 +39,12 @@ async def start_exam(
         )
         ml_resp.raise_for_status()
         questions = ml_resp.json()["questions"]
+    """
     #TODO упаковать в crud
-    exam = Exam(user_id=user.id, difficultylevel=data.difficulty)
+    exam =create_exam(db, user, data)
 
 
-    return {"examid": exam.id, "questions": questions}
+    return {"title": exam.title}#, "questions": questions # ML
 
 
 @router.post("/{examid}/submit", response_model=ExamResult)

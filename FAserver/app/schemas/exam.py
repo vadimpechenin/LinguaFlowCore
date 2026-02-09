@@ -12,8 +12,8 @@ class ExamQuestion(BaseModel):
     question: str
 
 class ExamResponse(BaseModel):
-    examid: str
-    questions: List[ExamQuestion]
+    title: str
+    #questions: List[ExamQuestion]
 
 class ExamSubmit(BaseModel):
     answers: list

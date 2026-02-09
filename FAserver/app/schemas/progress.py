@@ -7,6 +7,12 @@ class ReviewResult(BaseModel):
     is_correct: bool
     response_time_ms: Optional[int]
 
+class ProgressWord(BaseModel):
+    client_id: str
+    word_id: str
+    is_correct: bool
+    response_time_ms: Optional[int]
+
 class ProgressWordResponse(BaseModel):
     reviewcount: int
     successrate: float

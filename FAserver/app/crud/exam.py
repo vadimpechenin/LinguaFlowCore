@@ -1,13 +1,15 @@
 from sqlalchemy.orm import Session
 
 from app.db.core.support.UUIDClass import UUIDClass
-from app.db.models import Exam
+from app.db.models import Exam, User
 
 
-def create_exam(db: Session, data) -> Exam:
+def create_exam(db: Session, user: User, data) -> Exam:
     ID = UUIDClass.geterateUUIDWithout_()
     exam = Exam(**data.dict())
     exam.id = ID
+    exam.userid= user.id
+    exam.user = user
     db.add(exam)
     db.commit()
     db.refresh(exam)

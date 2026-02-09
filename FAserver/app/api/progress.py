@@ -12,6 +12,7 @@ from app.schemas.progress import (
     ReviewResult,
     ProgressSummary,
     ProgressWordResponse,
+    ProgressWord
 )
 
 
@@ -32,12 +33,26 @@ def review(
         db,
         user_id,
         word_id,
-        data.is_correct,
-        data.response_time_ms,
+        json={"is_correct": data.is_correct,
+        "response_time_ms": data.response_time_ms},
     )
     return {"status": "ok"}
 
 
+@router.post("/progress")
+def review(
+    data: ProgressWord,
+    db: Session = Depends(get_db),
+):
+
+    review_word(
+        db,
+        data.user_id,
+        data.word_id,
+        json={"is_correct": data.is_correct,
+              "response_time_ms": data.response_time_ms},
+    )
+    return {"status": "ok"}
 
 #1 Получить слова для повторения
 @router.get("/next")
@@ -66,8 +81,8 @@ async def get_next_review(user=Depends(get_current_user), db: Session = Depends(
 #2 Отправка результата ответа
 @router.post("/review/{user_id}/{word_id}")
 async def review_word(
-    user_id: int,
-    word_id: int,
+    user_id: str,
+    word_id: str,
     data: ReviewResult,
     db: Session = Depends(get_db),
 ):

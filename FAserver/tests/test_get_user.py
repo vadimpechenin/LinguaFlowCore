@@ -13,3 +13,4 @@ def test_get_user(client):
     assert data["email"] == "test_user@example.com"
 
     response = client.get("/users/me")
+    g = 0

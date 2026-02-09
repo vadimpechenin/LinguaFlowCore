@@ -21,7 +21,7 @@ def register(data: UserRegister, db: Session = Depends(get_db)):
     return create_user(db, data.name, data.username, data.email, data.password, data.initiallevel)
 
 
-@router.post("/login", response_model=Token)
+@router.post("/login", response_model=Token)#
 def login(data: UserLogin, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.username == data.username).first()
     if not user or not verify_password(data.password, user.password):

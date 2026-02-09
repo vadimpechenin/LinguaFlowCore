@@ -4,14 +4,14 @@ import hashlib
 
 
 SECRET_KEY = "SUPER_SECRET_KEY"
-ALGORITHM = "MD5"
+ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 def hash_password(password: str) -> str:
     h = hashlib.md5(password.encode('utf-8'))
     return h.hexdigest()
 
-def verify_password(stored_password, provided_password):
+def verify_password(provided_password, stored_password):
     #Почему-то не работает на одном и том же пароле
     password_hash = hashlib.md5((provided_password).encode('utf-8')).hexdigest()
     return password_hash == stored_password

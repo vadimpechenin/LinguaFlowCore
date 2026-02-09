@@ -44,3 +44,27 @@ def prepare_database():
 def client():
     app.dependency_overrides[get_db] = override_get_db
     return TestClient(app)
+
+@pytest.fixture()
+def auth_headers(client):
+    """
+    # создаём пользователя
+    res = client.post(
+        "/auth/register",
+        json={"name": "Test",
+            "username": "test_user_",
+            "email": "test_user@example.com",
+            "password": "password123",
+            "initiallevel": "A2"},
+    )
+    assert res.status_code == 200
+    """
+    res = client.post(
+        "/auth/login",
+        json={"username": "test_user_", "password": "password123"},
+    )
+    token = res.json()["access_token"]
+
+    return {"Authorization": f"Bearer {token}"}
+
+

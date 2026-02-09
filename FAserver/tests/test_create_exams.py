@@ -1,23 +1,21 @@
-def test_post_exams(client):
-    # 1️⃣ добавляем слова
-    exam = [
-        {
-            "texten": "apple",
-            "transcription": "ˈæp.əl",
-            "textl": "яблоко",
-            "partofspeech": "noun",
-            "examplesentence": "I eat an apple.",
-            "difficultylevel": "A1",
-        },
-        {
-            "texten": "knowledge",
-            "transcription": "ˈnɒlɪdʒ",
-            "textl": "знание",
-            "partofspeech": "noun",
-            "examplesentence": "Knowledge is power.",
-            "difficultylevel": "B1",
-        },
-    ]
+def test_create_exam(client, auth_headers):
+    payload = {
+        "title": "A1 Vocabulary Test",
+        "difficultylevel": "A1",
+        "score": 0,
+    }
 
-    response = client.post("/exam/start", json=exam)
-    assert response.status_code == 200
+    res = client.post(
+        "/exams/start",
+        json=payload,
+        headers=auth_headers,
+    )
+
+    assert res.status_code == 200
+    data = res.json()
+
+    assert data["title"] == "A1 Vocabulary Test"
+    #assert len(data["questions"]) <= 5
+
+
+
