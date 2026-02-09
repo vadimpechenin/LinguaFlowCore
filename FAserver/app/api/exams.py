@@ -4,12 +4,11 @@ import httpx
 
 from app.api.deps import get_current_user
 from app.api.deps import get_db
+from app.core.settings import ML_SERVICE_URL
 from app.db.models.exam import Exam
 from app.schemas.exam import ExamStart, ExamResponse, ExamResult
 from app.crud.exam import create_exam
 
-#TODO не реализована, еще делать и тестировать
-ML_SERVICE_URL = "http://ml-api:8000"
 
 router = APIRouter(prefix="/exams", tags=["Exams"])
 
