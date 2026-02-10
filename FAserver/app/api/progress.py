@@ -20,6 +20,7 @@ from app.services.ml_client import MLClient
 router = APIRouter(prefix="/review", tags=["review"])
 
 
+
 @router.post("/{user_id}/{word_id}")
 def review(
     user_id: str,
@@ -28,11 +29,10 @@ def review(
     db: Session = Depends(get_db),
 ):
     review_word(
-        db,
         user_id,
         word_id,
-        json={"is_correct": data.is_correct,
-        "response_time_ms": data.response_time_ms},
+        data,
+        db
     )
     return {"status": "ok"}
 

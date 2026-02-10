@@ -17,10 +17,6 @@ def get_words(
     db: Session = Depends(get_db),
 ):
     return list_words_duffuculty(db, difficulty, limit, offset)
-    q = db.query(Word)
-    if difficulty:
-        q = q.filter(Word.difficulty_level == difficulty)
-    return q.offset(offset).limit(limit).all()
 
 
 @router.get("/{word_id}", response_model=WordResponse)
