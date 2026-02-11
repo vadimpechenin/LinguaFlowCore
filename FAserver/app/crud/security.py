@@ -12,7 +12,6 @@ def hash_password(password: str) -> str:
     return h.hexdigest()
 
 def verify_password(provided_password, stored_password):
-    #Почему-то не работает на одном и том же пароле
     password_hash = hashlib.md5((provided_password).encode('utf-8')).hexdigest()
     return password_hash == stored_password
 

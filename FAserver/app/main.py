@@ -1,7 +1,7 @@
 # точка входа в сервер
 
 from fastapi import FastAPI
-from app.api import auth, users, words, progress, exams
+from app.api import auth, users, words, progress, exams, settings
 
 app = FastAPI(title="English Learning API")
 
@@ -10,3 +10,4 @@ app.include_router(exams.router)
 app.include_router(users.router)
 app.include_router(words.router)
 app.include_router(progress.router)
+app.include_router(settings.router)

@@ -19,5 +19,5 @@ def read_user(username: str, db: Session = Depends(get_db)):
 
 #TODO не понятно, работает ли
 @router.get("/me", response_model=UserResponse)
-def get_me(user: User = Depends(get_current_user)):
+def get_me(user= Depends(get_current_user)):
     return user
