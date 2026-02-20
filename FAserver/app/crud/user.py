@@ -34,7 +34,6 @@ def create_user(db: Session, name: str, username: str, email: str, password: str
     db.commit()
     db.refresh(user)
 
-
     return user
 
 

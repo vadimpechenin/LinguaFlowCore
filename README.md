@@ -107,3 +107,7 @@ pytest == 8.4.1
 httpx == 0.28.1
 
 python-jose == 3.5.0
+
+spacy == 3.8.11
+
+python -m spacy download en_core_web_sm

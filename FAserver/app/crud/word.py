@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.db.core.support.UUIDClass import UUIDClass
-from app.db.models import Word
+from app.db.models import Word, UserWordProgress
 
 
 def create_word(db: Session, data) -> Word:
@@ -17,6 +17,18 @@ def create_word(db: Session, data) -> Word:
 def list_words(db: Session, limit: int = 300):
     return db.query(Word).limit(limit).all()
 
+
+def load_user_words(db: Session, user_id: str):
+    #TODO надо заполнить сначала UserWordProgress тестово
+    rows = db.query(Word.texten).join(
+        UserWordProgress,
+        Word.id == UserWordProgress.wordid
+    ).filter(
+        UserWordProgress.userid == user_id,
+        UserWordProgress.isknown == True
+    )
+    rows = db.query(Word.texten)
+    return set(row[0] for row in rows)
 
 def get_word_by_id(db: Session, word_id: str):
     return db.query(Word).get(word_id)
