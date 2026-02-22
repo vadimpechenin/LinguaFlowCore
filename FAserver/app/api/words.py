@@ -4,7 +4,7 @@ from typing import List
 from app.api.deps import get_db, get_current_user
 from app.schemas.word import WordCreate, WordRead, WordResponse
 from app.crud.word import create_word, list_words, list_words_duffuculty, get_word_by_id
-
+from app.services.ml_client import recommend
 
 router = APIRouter(prefix="/words", tags=["words"])
 
@@ -41,3 +41,14 @@ def create(data: WordCreate, db: Session = Depends(get_db)):
 @router.get("/", response_model=list[WordRead])
 def list_all(db: Session = Depends(get_db)):
     return list_words(db)
+
+
+@router.get("/recommend")
+async def recommend_words(user=Depends(get_current_user), db: Session = Depends(get_db)):
+    words = list_words(db)
+    result = await recommend(
+        user.id,
+        words
+    )
+
+    return result

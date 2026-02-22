@@ -2,6 +2,53 @@ from typing import List, Dict
 import httpx
 import random
 
+from app.core.settings import ML_SERVICE_URL
+
+
+async def recommend(
+    user_id,
+    words
+):
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            f"{ML_SERVICE_URL}/recommend",
+            json={
+                "user_id": user_id,
+                "words": words
+            }
+        )
+
+        return response.json()
+
+
+async def predict(
+    user_id,
+    word_id,
+    features
+):
+
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            f"{ML_SERVICE_URL}/predict",
+            json={
+                "user_id": user_id,
+                "word_id": word_id,
+                "features": features
+            }
+        )
+
+        return response.json()
+
+
+class MLClient:
+    """
+    Интерфейс клиента ML
+    """
+    def get_next_review(self, history: List[Dict]) -> Dict:
+        raise NotImplementedError
+
+
 
 class TextAnalyzer:
     #Заглушка ML
@@ -35,16 +82,6 @@ class TextAnalyzer:
             "recommended_words": recommended
         }
 
-
-class MLClient:
-    """
-    Интерфейс клиента ML
-    """
-    def get_next_review(self, history: List[Dict]) -> Dict:
-        raise NotImplementedError
-
-
-
 async def analyze_text(
     content: str
 ):
@@ -53,7 +90,7 @@ async def analyze_text(
     """
     async with httpx.AsyncClient() as client:
         response = await client.post(
-            f"{ML_URL}/analyze",
+            f"{ML_SERVICE_URL}/analyze",
             json={
                 "title": title,
                 "content": content

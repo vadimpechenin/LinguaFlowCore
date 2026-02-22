@@ -1,2 +1,2 @@
 #TODO не реализована, еще делать и тестировать
-ML_SERVICE_URL = "http://ml-api:8000"
+ML_SERVICE_URL = "http://localhost:8001/ml"
