@@ -43,7 +43,7 @@ def review(
     db: Session = Depends(get_db),
     ml: MLClient = Depends(get_ml_client),
 ):
-    ml_result = ml.get_next_review(history)
+    #ml_result = ml.get_next_review(history)
     review_word(
         db,
         data.user_id,

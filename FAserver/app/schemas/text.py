@@ -10,11 +10,13 @@ class TextResponse(BaseModel):
     id: str
     title: str
     content: str
-"""
+
+
 class TextAnalyzeResponse(BaseModel):
-    totalwords = int
-    knownwords = int
-    unknownwords = int
-    coveragepercent = float
-    computedat: str | None
-"""
+    title: str
+    level: str
+    unknown_words: int
+    coveragepercent: float
+    recommended_words: list[str]
+
+

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 import httpx
 
@@ -6,9 +6,9 @@ from app.api.deps import get_current_user
 from app.api.deps import get_db
 from app.core.settings import ML_SERVICE_URL
 from app.db.models.text import Text
-from app.schemas.text import TextResponse, TextRequest#, TextAnalyzeResponse
+from app.schemas.text import TextResponse, TextRequest, TextAnalyzeResponse  # , TextAnalyzeResponse
 from app.crud.text import create_text,get_text_by_title
-
+from app.services.ml_client import analyze_text
 
 router = APIRouter(prefix="/texts", tags=["Texts"])
 
@@ -32,9 +32,9 @@ async def load_text(
 ):
     return get_text_by_title(db, text_title, user.id)
 
-@router.post("/{examid}/analyze")#, response_model=TextAnalyzeResponse
-async def analyze_text(
-    examid: str,
+@router.post("/{text_title}/analyze", response_model=TextAnalyzeResponse)#
+async def analyze(
+    text_title: str,
     user=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -51,5 +51,26 @@ async def analyze_text(
     :param db:
     :return:
     """
-    pass
+    text = get_text_by_title(db, text_title, user.id)
+
+    if not text:
+        raise HTTPException(
+            status_code=404,
+            detail="Text not found"
+        )
+
+    result = await analyze_text(
+        text.content
+    )
+
+    return TextAnalyzeResponse(
+        title=text_title,
+        level=result["level"],
+        unknown_words=result["unknown_words"],
+        coveragepercent=result["coveragepercent"],
+        recommended_words=result["recommended_words"]
+    )
+
+
+
 

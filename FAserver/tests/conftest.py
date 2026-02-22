@@ -47,28 +47,23 @@ def client():
 
 @pytest.fixture()
 def auth_headers(client):
-    """
-    # создаём пользователя
-    res = client.post(
-        "/auth/register",
-        json={"name": "Test",
-            "username": "test_user_",
-            "email": "test_user@example.com",
-            "password": "password123",
-            "initiallevel": "A2"},
-    )
-    assert res.status_code == 200
-    """
+    if (1==0):
+        # создаём пользователя
+        res = client.post(
+            "/auth/register",
+            json={"name": "Test",
+                "username": "test_user_",
+                "email": "test_user@example.com",
+                "password": "password123",
+                "initiallevel": "A2"},
+        )
+        assert res.status_code == 200
+
     res = client.post(
         "/auth/login",
         json={"username": "test_user_", "password": "password123"},
     )
-    """
-    res = client.post(
-        "/auth/login",
-        json={"username": "administrator", "password": "administrator"},
-    )
-    """
+
     token = res.json()["access_token"]
 
     return {"Authorization": f"Bearer {token}"}
