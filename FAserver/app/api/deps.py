@@ -11,14 +11,12 @@ from jose import jwt, JWTError
 from app.db.models.user import User
 from app.crud.security import SECRET_KEY, ALGORITHM
 
-from app.services.ml_client import MLClient
-from app.services.ml_client_iml import MLClientIml
-
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 def get_db() -> Generator[Session, None, None]:
+    print("Зашел в db")
     session = db.get_session()
     try:
         yield session
@@ -34,6 +32,7 @@ def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db),
 ) -> User:
+    print("Зашел в get_current_user")
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         userid: str = payload.get("sub")
@@ -45,6 +44,4 @@ def get_current_user(
         raise HTTPException(404, "User not found")
     return user
 
-def get_ml_client() -> MLClient:
-    return MLClientIml()
 

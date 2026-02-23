@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from app.api.deps import get_db, get_current_user
-from app.schemas.word import WordCreate, WordRead, WordResponse
+from app.schemas.word import WordCreate, WordRead, WordResponse, WordRecomendationResponse
 from app.crud.word import create_word, list_words, list_words_duffuculty, get_word_by_id
-from app.services.ml_client import recommend
+from app.services.ml_client import recommend, get_ml_client
+from app.services.ml_client import MLClient
 
 router = APIRouter(prefix="/words", tags=["words"])
 
@@ -18,6 +19,38 @@ def get_words(
 ):
     return list_words_duffuculty(db, difficulty, limit, offset)
 
+
+@router.get("/", response_model=list[WordRead])
+def list_all(db: Session = Depends(get_db), ml_client: MLClient = Depends(get_ml_client)):
+    words = list_words(db)
+    print(words[0].id)
+    result = ml_client.recommend(
+        words
+    )
+    return list_words(db)
+
+
+@router.get("/recommend", response_model=list[WordRecomendationResponse])#
+async def recommend_words(user=Depends(get_current_user),
+                    db: Session = Depends(get_db),
+                    ml_client: MLClient = Depends(get_ml_client)):
+    words = list_words(db)
+    """
+    result = ml_client.recommend(
+        words
+    )
+    """
+    result = await ml_client.recommend(
+        words
+    )
+
+    if result is None:
+        raise HTTPException(
+            status_code=503,
+            detail="ML Service unavailable"
+        )
+
+    return result
 
 @router.get("/{word_id}", response_model=WordResponse)
 def get_word(word_id: str, db: Session = Depends(get_db)):
@@ -38,17 +71,3 @@ def create(data: WordCreate, db: Session = Depends(get_db)):
     return create_word(db, data)
 
 
-@router.get("/", response_model=list[WordRead])
-def list_all(db: Session = Depends(get_db)):
-    return list_words(db)
-
-
-@router.get("/recommend")
-async def recommend_words(user=Depends(get_current_user), db: Session = Depends(get_db)):
-    words = list_words(db)
-    result = await recommend(
-        user.id,
-        words
-    )
-
-    return result

@@ -3,22 +3,28 @@ import httpx
 import random
 
 from app.core.settings import ML_SERVICE_URL
+from app.db.models.word import Word
 
 
 async def recommend(
     user_id,
     words
 ):
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            f"{ML_SERVICE_URL}/recommend",
-            json={
-                "user_id": user_id,
-                "words": words
-            }
-        )
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{ML_SERVICE_URL}/recommend",
+                json={
+                    "user_id": user_id,
+                    "words": words
+                }
+            )
 
-        return response.json()
+            return response.json()
+
+    except Exception:
+
+        return {"words": []}
 
 
 async def predict(
@@ -45,9 +51,32 @@ class MLClient:
     """
     Интерфейс клиента ML
     """
-    def get_next_review(self, history: List[Dict]) -> Dict:
+    async def recommend(self, words: List[Word]) -> List[dict]:
         raise NotImplementedError
 
+
+class MLClientIml(MLClient):
+    """
+    Реализация
+    """
+    async def recommend(
+            self,
+            words: List[Word]
+    ) -> List[dict]:
+        # простая логика
+
+        return [
+            {
+                "id": w.id,
+                "texten": w.texten
+            }
+            for w in words[:10]
+        ]
+
+
+def get_ml_client() -> MLClient:
+    print("Зашел в get_ml_client")
+    return MLClientIml()
 
 
 class TextAnalyzer:

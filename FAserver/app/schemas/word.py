@@ -28,3 +28,7 @@ class WordResponse(BaseModel):
     difficultylevel: str
     audiourl: str | None
     createdat: datetime
+
+class WordRecomendationResponse(BaseModel):
+    id: str
+    texten: str

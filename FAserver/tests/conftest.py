@@ -4,8 +4,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.main import app
-from app.api.deps import get_db, get_ml_client
-
+from app.api.deps import get_db
+from app.services.ml_client import get_ml_client
+from mocks.ml_client_mock import MockMLClient
 
 TEST_DATABASE_URL = "postgresql+psycopg2://postgres:mapr@localhost:5432/lfc"
 
@@ -69,25 +70,15 @@ def auth_headers(client):
     return {"Authorization": f"Bearer {token}"}
 
 
-from app.services.ml_client import MLClient
-from datetime import datetime, timedelta
-
-class MockMLClient(MLClient):
-
-    def get_next_review(self, history):
-        return {
-            "next_review_at": (
-                datetime.utcnow() + timedelta(days=1)
-            ).isoformat(),
-            "difficulty": "A1",
-            "confidence": 0.95,
-        }
 
 @pytest.fixture(autouse=True)
+
 def override_ml():
-    app.dependency_overrides[get_ml_client] = lambda: MockMLClient()
+    app.dependency_overrides[get_ml_client] = (
+        lambda: MockMLClient()
+    )
     yield
-    app.dependency_overrides.pop(get_ml_client)
+    app.dependency_overrides.clear()
 
 
 

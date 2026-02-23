@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 import httpx
 from datetime import datetime, timedelta
-from app.api.deps import get_db, get_ml_client
+from app.api.deps import get_db
 from app.core.settings import ML_SERVICE_URL
 from app.crud.progress import review_word
 from app.api.deps import get_current_user
@@ -15,7 +15,7 @@ from app.schemas.progress import (
     ProgressWordResponse,
     ProgressWord
 )
-from app.services.ml_client import MLClient
+from app.services.ml_client import MLClient, get_ml_client
 
 router = APIRouter(prefix="/review", tags=["review"])
 
