@@ -1,4 +1,4 @@
-from app.services.ml_client import MLClient
+from app.services.ml_client import MLClient, TextAnalyzer
 
 
 class MockMLClient(MLClient):
@@ -10,7 +10,6 @@ class MockMLClient(MLClient):
             words
     ):
         # простая логика
-
         return [
             {
                 "id": w.id,
@@ -18,3 +17,11 @@ class MockMLClient(MLClient):
             }
             for w in words[:5]
         ]
+
+    async def analyze_text(
+            self,
+            content: str
+    )-> dict:
+        analyzer = TextAnalyzer()
+        result = analyzer.analyze(content)
+        return result

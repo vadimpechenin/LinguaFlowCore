@@ -8,7 +8,7 @@ from app.core.settings import ML_SERVICE_URL
 from app.db.models.text import Text
 from app.schemas.text import TextResponse, TextRequest, TextAnalyzeResponse  # , TextAnalyzeResponse
 from app.crud.text import create_text,get_text_by_title
-from app.services.ml_client import analyze_text
+from app.services.ml_client import get_ml_client, MLClient
 
 router = APIRouter(prefix="/texts", tags=["Texts"])
 
@@ -37,6 +37,7 @@ async def analyze(
     text_title: str,
     user=Depends(get_current_user),
     db: Session = Depends(get_db),
+    ml_client: MLClient = Depends(get_ml_client)
 ):
     """
     Coverage  Level
@@ -59,7 +60,7 @@ async def analyze(
             detail="Text not found"
         )
 
-    result = await analyze_text(
+    result = await ml_client.analyze_text(
         text.content
     )
 

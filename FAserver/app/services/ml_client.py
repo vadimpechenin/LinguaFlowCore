@@ -54,6 +54,9 @@ class MLClient:
     async def recommend(self, words: List[Word]) -> List[dict]:
         raise NotImplementedError
 
+    async def analyze_text(self,
+            content: str) -> dict:
+        raise NotImplementedError
 
 class MLClientIml(MLClient):
     """
@@ -72,6 +75,24 @@ class MLClientIml(MLClient):
             }
             for w in words[:10]
         ]
+
+    async def analyze_text(
+            self,
+            content: str
+    )-> dict:
+        analyzer = TextAnalyzer()
+        result = analyzer.analyze(content)
+        """
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{ML_SERVICE_URL}/analyze",
+                json={
+                    "title": title,
+                    "content": content
+                }
+            )
+        """
+        return result
 
 
 def get_ml_client() -> MLClient:
@@ -111,19 +132,4 @@ class TextAnalyzer:
             "recommended_words": recommended
         }
 
-async def analyze_text(
-    content: str
-):
-    analyzer = TextAnalyzer()
-    result = analyzer.analyze(content)
-    """
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            f"{ML_SERVICE_URL}/analyze",
-            json={
-                "title": title,
-                "content": content
-            }
-        )
-    """
-    return result
+
