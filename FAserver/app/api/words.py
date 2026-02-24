@@ -23,10 +23,6 @@ def get_words(
 @router.get("/", response_model=list[WordRead])
 def list_all(db: Session = Depends(get_db), ml_client: MLClient = Depends(get_ml_client)):
     words = list_words(db)
-    print(words[0].id)
-    result = ml_client.recommend(
-        words
-    )
     return list_words(db)
 
 
