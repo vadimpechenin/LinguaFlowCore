@@ -6,7 +6,7 @@ def test_create_text(client, auth_headers):
     fileName = "The secret garden.txt"
     cwd = os.getcwd()
     cwd_ = cwd.split("\\")
-    path = "D:"
+    path = cwd_[0]
     for c in cwd_[1:-3]:
         path = path + "\\" + c
     texts_file_path = Path(path + "\\documents\\" + fileName)

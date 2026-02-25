@@ -245,3 +245,4 @@ fabric.properties
 deploy/requirements.txt
 main/resources/db.db_backup
 /test/resources/ТестТрудоемкости_result.json
+/weights_for_ML/cerf_model.pkl

@@ -1,6 +1,6 @@
 from typing import Set, Dict
 
-from app.services.ml_client import MLClient, TextCoverageAnalyzer
+from app.services.ml_client import MLClient, TextAnalyzer
 
 
 class MockMLClient(MLClient):
@@ -25,6 +25,6 @@ class MockMLClient(MLClient):
             content: str,
             user_words: Set[str]
     )-> Dict:
-        analyzer = TextCoverageAnalyzer(user_words)
+        analyzer = TextAnalyzer(user_words)
         result = analyzer.analyze(content)
         return result

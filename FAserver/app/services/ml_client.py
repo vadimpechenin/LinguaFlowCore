@@ -4,6 +4,7 @@ import random
 
 from app.core.settings import ML_SERVICE_URL
 from app.db.models.word import Word
+from app.services.pipelines.text_analyzer import WordAnalyzer
 
 
 async def recommend(
@@ -81,7 +82,7 @@ class MLClientIml(MLClient):
             content: str,
             user_words: Set[str]
     )-> Dict:
-        analyzer = TextCoverageAnalyzer(user_words)
+        analyzer = TextAnalyzer(user_words)
         result = analyzer.analyze(content)
         """
         async with httpx.AsyncClient() as client:
@@ -106,14 +107,28 @@ import spacy
 
 nlp = spacy.load("en_core_web_sm")
 
-class TextCoverageAnalyzer:
-
+class TextAnalyzer:
+    """
+    Text
+    ↓
+    Tokenizer
+    ↓
+    BERT encoder
+    ↓
+    CEFR classifier
+    ↓
+    Recommendation engine
+    ↓
+    Response
+    """
     def __init__(self, user_words: Set[str]):
         # приводим к lowercase
         self.user_words = set(
             word.lower()
             for word in user_words
         )
+        self.word_analyzer = WordAnalyzer()
+
 
     def preprocess_text(
             self,
@@ -144,7 +159,8 @@ class TextCoverageAnalyzer:
         ) -> Dict:
         #text_words = self.preprocess_text(text)
         text_words = self.preprocess_text_nlp(text)
-
+        #Уровни сложности слов, пока не используем
+        #result = self.word_analyzer.analyze(list(text_words))
         known = text_words.intersection(
             self.user_words
         )
