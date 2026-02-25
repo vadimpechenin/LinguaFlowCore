@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Set
 import httpx
 import random
 
@@ -55,7 +55,7 @@ class MLClient:
         raise NotImplementedError
 
     async def analyze_text(self,
-            content: str) -> dict:
+            content: str, user_words: Set[str]) -> Dict:
         raise NotImplementedError
 
 class MLClientIml(MLClient):
@@ -78,9 +78,10 @@ class MLClientIml(MLClient):
 
     async def analyze_text(
             self,
-            content: str
-    )-> dict:
-        analyzer = TextAnalyzer()
+            content: str,
+            user_words: Set[str]
+    )-> Dict:
+        analyzer = TextCoverageAnalyzer(user_words)
         result = analyzer.analyze(content)
         """
         async with httpx.AsyncClient() as client:
@@ -100,36 +101,84 @@ def get_ml_client() -> MLClient:
     return MLClientIml()
 
 
-class TextAnalyzer:
-    #Заглушка ML
+import re
+import spacy
 
-    def analyze(
-        self,
-        content: str
-    ):
-        words = content.split()
-        total_words = len(words)
-        unknown_words = int(
-            total_words * random.uniform(0.1, 0.3)
+nlp = spacy.load("en_core_web_sm")
+
+class TextCoverageAnalyzer:
+
+    def __init__(self, user_words: Set[str]):
+        # приводим к lowercase
+        self.user_words = set(
+            word.lower()
+            for word in user_words
         )
 
-        difficulty = unknown_words / total_words
+    def preprocess_text(
+            self,
+            text: str
+    ) -> Set[str]:
+        # извлекаем только слова - базовая версия
+        words = re.findall(
+            r"[a-zA-Z']+",
+            text.lower()
 
-        if difficulty < 0.2:
-            level = "A2"
-        elif difficulty < 0.4:
-            level = "B1"
-        elif difficulty < 0.6:
-            level = "B2"
-        else:
+        )
+        return set(words)
+
+    def preprocess_text_nlp(self,text):
+        #Улучшенная версия
+        # с лемматизацией; частотным анализом
+        doc = nlp(text)
+
+        return set(
+            token.lemma_
+            for token in doc
+            if token.is_alpha
+        )
+
+    def analyze(
+            self,
+            text: str
+        ) -> Dict:
+        #text_words = self.preprocess_text(text)
+        text_words = self.preprocess_text_nlp(text)
+
+        known = text_words.intersection(
+            self.user_words
+        )
+
+        unknown = text_words.difference(
+            self.user_words
+        )
+
+        total = len(text_words)
+        known_count = len(known)
+        unknown_count = len(unknown)
+
+        coverage = (
+            known_count / total * 100
+            if total > 0 else 0
+        )
+        #TODO заглушки
+        if coverage < 20:
             level = "C1"
+        elif coverage < 40:
+            level = "B2"
+        elif coverage < 60:
+            level = "B1"
+        else:
+            level = "A2"
 
-        recommended = words[:5]
+        recommended = sorted(list(unknown)[:5])
+
         return {
-            "level": level,
-            "unknown_words": unknown_words,
-            "coveragepercent": difficulty*100,
-            "recommended_words": recommended
+            "total_words": total,
+            "known_words": known_count,
+            "unknown_words": unknown_count,
+            "coverage_percent": round(coverage, 2),
+            "recommended_words_list": recommended,
+            "level": level
         }
-
 

@@ -7,21 +7,20 @@ def test_create_text(client, auth_headers):
     cwd = os.getcwd()
     cwd_ = cwd.split("\\")
     path = "D:"
-    for c in cwd_[1:-2]:
+    for c in cwd_[1:-3]:
         path = path + "\\" + c
     texts_file_path = Path(path + "\\documents\\" + fileName)
 
     content = texts_file_path.read_text(encoding="utf-8")
 
     blocks = content.split("=== TEXT ===")
-
+    title = None
+    text_content= None
     for block in blocks:
         if "=== END ===" not in block:
             continue
 
         header, body = block.split("\n\n", 1)
-
-        title = None
 
         for line in header.splitlines():
             if line.startswith("Title:"):

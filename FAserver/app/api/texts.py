@@ -5,6 +5,7 @@ import httpx
 from app.api.deps import get_current_user
 from app.api.deps import get_db
 from app.core.settings import ML_SERVICE_URL
+from app.crud.word import load_user_words
 from app.db.models.text import Text
 from app.schemas.text import TextResponse, TextRequest, TextAnalyzeResponse  # , TextAnalyzeResponse
 from app.crud.text import create_text,get_text_by_title
@@ -18,9 +19,13 @@ async def submit_text(
     data: TextRequest,
     user=Depends(get_current_user),
     db: Session = Depends(get_db),
+    ml_client: MLClient = Depends(get_ml_client)
 ):
-
-    text =create_text(db, user, data)
+    user_words = load_user_words(db, user.id)
+    result_of_text_analyzer = await ml_client.analyze_text(
+        data.content,user_words
+    )
+    text =create_text(db, user, data, result_of_text_analyzer)
     return {"id": text.id,"title": text.title, "content": text.content}#, "questions": questions # ML
 
 
@@ -53,7 +58,7 @@ async def analyze(
     :return:
     """
     text = get_text_by_title(db, text_title, user.id)
-
+    user_words = load_user_words(db, user.id)
     if not text:
         raise HTTPException(
             status_code=404,
@@ -61,15 +66,15 @@ async def analyze(
         )
 
     result = await ml_client.analyze_text(
-        text.content
+        text.content,user_words
     )
 
     return TextAnalyzeResponse(
         title=text_title,
         level=result["level"],
         unknown_words=result["unknown_words"],
-        coveragepercent=result["coveragepercent"],
-        recommended_words=result["recommended_words"]
+        coveragepercent=result["coverage_percent"],
+        recommended_words=result["recommended_words_list"]
     )
 
 
