@@ -245,7 +245,7 @@ fabric.properties
 deploy/requirements.txt
 main/resources/db.db_backup
 /test/resources/ТестТрудоемкости_result.json
-/weights_for_ML/cerf_model.pkl
+/weights_for_ML/cerf_predictor.pkl
 /weights_for_ML/difficulty_predictor.pkl
 /weights_for_ML/recommender.pkl
 /data_for_ML/CEFR-J Wordlist Ver1.6.xlsx
