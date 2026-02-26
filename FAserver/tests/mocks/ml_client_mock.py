@@ -1,7 +1,8 @@
 from typing import Set, Dict
 
-from app.services.ml_client import MLClient, TextAnalyzer
-from app.services.pipelines.text_analyzer import WordAnalyzer
+from app.services.ml_client import MLClient
+from app.services.pipelines.text_analyzer import TextAnalyzer
+from app.services.pipelines.word_analyzer import WordAnalyzer
 
 
 class MockMLClient(MLClient):

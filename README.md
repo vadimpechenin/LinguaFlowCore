@@ -111,3 +111,5 @@ python-jose == 3.5.0
 spacy == 3.8.11
 
 python -m spacy download en_core_web_sm
+
+sentence-transformers == 5.2.0

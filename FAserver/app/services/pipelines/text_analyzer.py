@@ -1,59 +1,104 @@
-import numpy as np
+import re
+import spacy
+from typing import Dict, Set
 
-from app.services.models.bert_encod import BertEncoder
-from app.services.models.cefr_classifier import CEFRClassifier
-from app.services.models.recommender_engine import RecommendationEngine
-from app.services.models.recommender_load import RecommendationLoader
+from app.services.pipelines.word_analyzer import WordAnalyzer
+
+nlp = spacy.load("en_core_web_sm")
+
+class TextAnalyzer:
+    """
+    Text
+    ↓
+    Tokenizer
+    ↓
+    BERT encoder
+    ↓
+    CEFR classifier
+    ↓
+    Recommendation engine
+    ↓
+    Response
+    """
+    def __init__(self, user_words: Set[str]):
+        # приводим к lowercase
+        self.user_words = set(
+            word.lower()
+            for word in user_words
+        )
+        self.word_analyzer = WordAnalyzer()
 
 
-class WordAnalyzer:
+    def preprocess_text(
+            self,
+            text: str
+    ) -> Set[str]:
+        # извлекаем только слова - базовая версия
+        words = re.findall(
+            r"[a-zA-Z']+",
+            text.lower()
 
+        )
+        return set(words)
 
-   def __init__(self):
+    def preprocess_text_nlp(self,text):
+        #Улучшенная версия
+        # с лемматизацией; частотным анализом
+        doc = nlp(text)
 
-       self.encoder = BertEncoder()
-       self.cefr = CEFRClassifier()
-       self.rec = RecommendationLoader()
-       self.rec_eng = RecommendationEngine()
+        return set(
+            token.lemma_
+            for token in doc
+            if token.is_alpha
+        )
 
-   def analyze(self, words):
-       words_ = self.text_extraction(words)
-       embedding = self.encoder.encode(words_)
-       cefr = self.cefr.predict(embedding)
-       results = []
+    def analyze(
+            self,
+            text: str
+        ) -> Dict:
+        #text_words = self.preprocess_text(text)
+        text_words = self.preprocess_text_nlp(text)
+        #Уровни сложности слов, пока не используем
+        #result = self.word_analyzer.analyze(list(text_words))
+        known = text_words.intersection(
+            self.user_words
+        )
 
-       for idx in range(len(words)):
-           results.append({
-               "id": words[idx].id,
-               "word": words_[idx],
-               "cefr": cefr[idx],
-               "embedding": embedding[idx].tolist()
-           })
+        unknown = text_words.difference(
+            self.user_words
+        )
 
-       return results
+        total = len(text_words)
+        known_count = len(known)
+        unknown_count = len(unknown)
 
-   def recommend(self, words):
-       analize_results = self.analyze(words)
-       #words_ = self.text_extraction(words)
-       #embedding = self.encoder.encode(words_)
-       scores = []
-       for item in analize_results:
-           scores.append(self.rec_eng.recommend(np.asarray(item["embedding"]),self.rec.embeddings)[0])
+        coverage = (
+            known_count / total * 100
+            if total > 0 else 0
+        )
+        #Оценка сложности текста
+        dif_res = self.word_analyzer.dif_predictor(list(text_words))
 
-       results = []
+        if dif_res < 0.15:
+            level = "C2"
+        elif dif_res < 0.3:
+            level = "C1"
+        elif coverage < 0.5:
+            level = "B2"
+        elif coverage < 0.7:
+            level = "B1"
+        elif coverage < 0.9:
+            level = "A2"
+        else:
+            level = "A1"
 
-       for idx in range(len(words)):
-           if (scores[idx]<0.7):
-               results.append({
-                   "id": analize_results[idx]["id"],
-                   "texten": analize_results[idx]["word"],
-                   "difficultylevel": analize_results[idx]["cefr"]
-               })
+        recommended = sorted(list(unknown)[:5])
 
-       return results
-   def text_extraction(self, words):
-       results = []
-       for word in words:
-           results.append(word.texten)
-
-       return results
+        return {
+            "total_words": total,
+            "known_words": known_count,
+            "unknown_words": unknown_count,
+            "coverage_percent": round(coverage, 2),
+            "recommended_words_list": recommended,
+            "level": level
+        }
