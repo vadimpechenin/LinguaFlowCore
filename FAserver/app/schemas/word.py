@@ -32,3 +32,4 @@ class WordResponse(BaseModel):
 class WordRecomendationResponse(BaseModel):
     id: str
     texten: str
+    difficultylevel: str

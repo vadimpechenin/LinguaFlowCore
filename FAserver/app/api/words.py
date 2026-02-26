@@ -30,12 +30,14 @@ def list_all(db: Session = Depends(get_db), ml_client: MLClient = Depends(get_ml
 async def recommend_words(user=Depends(get_current_user),
                     db: Session = Depends(get_db),
                     ml_client: MLClient = Depends(get_ml_client)):
+    #TODO надо в привязке к пользователю
     words = list_words(db)
     """
     result = ml_client.recommend(
         words
     )
     """
+
     result = await ml_client.recommend(
         words
     )

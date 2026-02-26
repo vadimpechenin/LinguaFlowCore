@@ -1,24 +1,38 @@
+import os
+
+import joblib
 import torch
 from transformers import AutoTokenizer, AutoModel
+#from sentence_transformers import SentenceTransformer
+
+from app.core.settings import CERF_NAME
 
 
 class BertEncoder:
 
    def __init__(self):
-
+       cwd = os.getcwd()
+       cwd_ = cwd.split("\\")
+       path = cwd_[0]
+       for c in cwd_[1:-3]:
+           path = path + "\\" + c
+       texts_file_path = path + "\\weights_for_ML\\" + CERF_NAME
+       data = joblib.load(texts_file_path)
+       encoder_name = data["encoder_name"]
        self.tokenizer = AutoTokenizer.from_pretrained(
-           "sentence-transformers/all-MiniLM-L6-v2"
+           "sentence-transformers/" + encoder_name
        )
        self.model = AutoModel.from_pretrained(
-           "sentence-transformers/all-MiniLM-L6-v2"
+           "sentence-transformers/" + encoder_name
        )
        self.model.eval()
 
-   def encode(self, word):
-
+   def encode(self, words):
        inputs = self.tokenizer(
-           word,
-           return_tensors="pt"
+           words,
+           return_tensors="pt",
+            padding=True,
+            truncation=True
        )
        with torch.no_grad():
            outputs = self.model(**inputs)

@@ -68,14 +68,10 @@ class MLClientIml(MLClient):
             words: List[Word]
     ) -> List[dict]:
         # простая логика
-
-        return [
-            {
-                "id": w.id,
-                "texten": w.texten
-            }
-            for w in words[:10]
-        ]
+        analyzer = WordAnalyzer()
+        result = analyzer.recommend(words[:100])
+        # простая логика
+        return result
 
     async def analyze_text(
             self,

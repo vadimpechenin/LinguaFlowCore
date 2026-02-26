@@ -1,6 +1,7 @@
 from typing import Set, Dict
 
 from app.services.ml_client import MLClient, TextAnalyzer
+from app.services.pipelines.text_analyzer import WordAnalyzer
 
 
 class MockMLClient(MLClient):
@@ -11,14 +12,10 @@ class MockMLClient(MLClient):
             self,
             words
     ):
+        analyzer =WordAnalyzer()
+        result = analyzer.recommend(words[:100])
         # простая логика
-        return [
-            {
-                "id": w.id,
-                "texten": w.texten
-            }
-            for w in words[:5]
-        ]
+        return result
 
     async def analyze_text(
             self,
