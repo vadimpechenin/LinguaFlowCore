@@ -18,7 +18,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import HistGradientBoostingRegressor
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, r2_score
 
 from additionCodes.load_df import load_df
 from utils.commonUtils import CommonUtils
@@ -120,7 +120,10 @@ print(
         )
     )
 )
-
+print(
+    "R2",
+     r2_score(y_test, pred)
+)
 
 print("Saving")
 

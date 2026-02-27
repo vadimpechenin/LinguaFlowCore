@@ -77,7 +77,7 @@ class TextAnalyzer:
             if total > 0 else 0
         )
         #Оценка сложности текста
-        dif_res = self.word_analyzer.dif_predictor(list(text_words))
+        dif_res = self.word_analyzer.dif_predictor(list(unknown))
 
         if dif_res < 0.15:
             level = "C2"
