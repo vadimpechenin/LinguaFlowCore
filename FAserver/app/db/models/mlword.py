@@ -10,7 +10,7 @@ class MLWordFeatures(Base):
     )
 
     frequencyrank = Column(Integer)
-    avgsuccess_rate = Column(Float)
+    avgsuccessrate = Column(Float)
     avgreviewinterval = Column(Float)
 
     word = relationship("Word", back_populates="mlfeatures")

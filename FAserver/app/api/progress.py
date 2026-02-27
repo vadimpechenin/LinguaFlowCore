@@ -4,7 +4,7 @@ import httpx
 from datetime import datetime, timedelta
 from app.api.deps import get_db
 from app.core.settings import ML_SERVICE_URL
-from app.crud.progress import review_word
+from app.crud.progress import review_word, seed_user_progress
 from app.api.deps import get_current_user
 from app.db.models.progress import UserWordProgress
 from app.db.models.review import WordReview
@@ -13,7 +13,7 @@ from app.schemas.progress import (
     ReviewResult,
     ProgressSummary,
     ProgressWordResponse,
-    ProgressWord
+    ProgressWord, ProgressWords
 )
 from app.services.ml_client import MLClient, get_ml_client
 
@@ -21,37 +21,24 @@ router = APIRouter(prefix="/review", tags=["review"])
 
 
 
-@router.post("/{user_id}/{word_id}")
-def review(
-    user_id: str,
-    word_id: str,
-    data: ReviewResult,
-    db: Session = Depends(get_db),
-):
-    review_word(
-        user_id,
-        word_id,
-        data,
-        db
-    )
-    return {"status": "ok"}
 
 
-@router.post("/progress")
+
+@router.post("/progress", response_model=UserProgressFeaturesWord)
 def review(
-    data: ProgressWord,
+    data: ProgressWords,
     db: Session = Depends(get_db),
+    user=Depends(get_current_user),
     ml: MLClient = Depends(get_ml_client),
 ):
     #ml_result = ml.get_next_review(history)
-    review_word(
+    result = seed_user_progress(
         db,
-        data.user_id,
-        data.word_id,
-        json={"is_correct": data.is_correct,
-              "response_time_ms": data.response_time_ms},
+        user.id,
+        data.word_ids,
+        data.is_known
     )
-    return {"status": "ok"}
+    return result
 
 #1 Получить слова для повторения
 @router.get("/next")
@@ -76,6 +63,39 @@ async def get_next_review(user=Depends(get_current_user), db: Session = Depends(
 
     word_ids = [w["word_id"] for w in resp.json()["recommended_words"]]
     return db.query(Word).filter(Word.id.in_(word_ids)).all()
+
+#4 Общий прогресс
+@router.get("/progress/summary", response_model=ProgressSummary)
+def progress_summary(user=Depends(get_current_user), db: Session = Depends(get_db)):
+    total_words = db.query(Word).count()
+    learned = (
+        db.query(UserWordProgress)
+        .filter(
+            UserWordProgress.user_id == user.id,
+            UserWordProgress.success_rate > 0.8,
+        )
+        .count()
+    )
+
+    avg_success = (
+        db.query(UserWordProgress)
+        .filter_by(user_id=user.id)
+        .with_entities(UserWordProgress.success_rate)
+        .all()
+    )
+
+    success_rate = (
+        sum(r[0] for r in avg_success) / len(avg_success)
+        if avg_success
+        else 0.0
+    )
+
+    return ProgressSummary(
+        total_words=total_words,
+        learned_words=learned,
+        daily_streak=0,  # можно добавить позже
+        success_rate=round(success_rate, 2),
+    )
 
 #2 Отправка результата ответа
 @router.post("/review/{user_id}/{word_id}")
@@ -136,6 +156,22 @@ async def review_word(
     db.commit()
     return {"status": "ok"}
 
+@router.post("/{user_id}/{word_id}")
+def review(
+    user_id: str,
+    word_id: str,
+    data: ReviewResult,
+    db: Session = Depends(get_db),
+):
+    review_word(
+        user_id,
+        word_id,
+        data,
+        db
+    )
+    return {"status": "ok"}
+
+
 #3 Прогресс по слову
 @router.get("/progress/word/{word_id}", response_model=ProgressWordResponse)
 def word_progress(
@@ -152,35 +188,3 @@ def word_progress(
         raise HTTPException(404, "No progress")
     return progress
 
-#4 Общий прогресс
-@router.get("/progress/summary", response_model=ProgressSummary)
-def progress_summary(user=Depends(get_current_user), db: Session = Depends(get_db)):
-    total_words = db.query(Word).count()
-    learned = (
-        db.query(UserWordProgress)
-        .filter(
-            UserWordProgress.user_id == user.id,
-            UserWordProgress.success_rate > 0.8,
-        )
-        .count()
-    )
-
-    avg_success = (
-        db.query(UserWordProgress)
-        .filter_by(user_id=user.id)
-        .with_entities(UserWordProgress.success_rate)
-        .all()
-    )
-
-    success_rate = (
-        sum(r[0] for r in avg_success) / len(avg_success)
-        if avg_success
-        else 0.0
-    )
-
-    return ProgressSummary(
-        total_words=total_words,
-        learned_words=learned,
-        daily_streak=0,  # можно добавить позже
-        success_rate=round(success_rate, 2),
-    )

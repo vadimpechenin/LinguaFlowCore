@@ -13,10 +13,18 @@ class ProgressWord(BaseModel):
     is_correct: bool
     response_time_ms: Optional[int]
 
+class ProgressWords(BaseModel):
+    word_ids: list[str]
+    is_known: bool
+
 class ProgressWordResponse(BaseModel):
     reviewcount: int
     successrate: float
     nextreviewed: datetime | None
+
+class UserProgressFeaturesWord(BaseModel):
+    progress_created: int
+    features_created: int
 
 class ProgressSummary(BaseModel):
     total_words: int
