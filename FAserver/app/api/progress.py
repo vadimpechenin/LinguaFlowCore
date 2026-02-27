@@ -13,7 +13,7 @@ from app.schemas.progress import (
     ReviewResult,
     ProgressSummary,
     ProgressWordResponse,
-    ProgressWord, ProgressWords
+    ProgressWord, ProgressWords, UserProgressFeaturesWord
 )
 from app.services.ml_client import MLClient, get_ml_client
 
