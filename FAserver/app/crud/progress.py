@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 
 from app.db.core.support.UUIDClass import UUIDClass
-from app.db.models import UserWordProgress, WordReview, MLWordFeatures
+from app.db.models import UserWordProgress, WordReview, MLWordFeatures, Word
 from sqlalchemy import func
 
 
@@ -175,3 +175,68 @@ def seed_user_progress(
         "progress_created": created_progress,
         "features_created": created_features
     }
+
+
+#----------------------
+#Блок методов для ReviewSelector
+def get_due_words(
+    db: Session,
+    user_id: str,
+    limit: int = 20
+):
+
+    now = datetime.utcnow()
+
+    return (
+        db.query(UserWordProgress)
+        .join(Word)
+        .filter(
+            UserWordProgress.userid == user_id,
+            UserWordProgress.nextreviewed <= now
+        )
+        .order_by(
+            UserWordProgress.nextreviewed.asc()
+        )
+        .limit(limit)
+        .all()
+    )
+
+
+def get_weak_words(
+    db: Session,
+    user_id: str,
+    limit: int = 10
+):
+
+    return (
+        db.query(UserWordProgress)
+        .join(Word)
+        .filter(
+            UserWordProgress.userid == user_id,
+            UserWordProgress.successrate < 0.6
+        )
+        .order_by(
+            UserWordProgress.successrate.asc()
+        )
+        .limit(limit)
+        .all()
+    )
+
+
+def get_new_words(
+    db: Session,
+    user_id: str,
+    limit: int = 10
+):
+
+    subquery = (
+        db.query(UserWordProgress.wordid)
+        .filter(UserWordProgress.userid == user_id)
+    )
+
+    return (
+        db.query(Word)
+        .filter(~Word.id.in_(subquery))
+        .limit(limit)
+        .all()
+    )

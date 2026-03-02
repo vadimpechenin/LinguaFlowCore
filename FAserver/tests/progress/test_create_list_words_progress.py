@@ -5,7 +5,7 @@ def test_get_list_words_progress(client, auth_headers):
     for word in words:
         word_ids.append(word["id"])
     review_response = client.post(
-        f"/review/progress",
+        f"/review/progress/seed",
         json={
             "word_ids": word_ids,
             "is_known": False

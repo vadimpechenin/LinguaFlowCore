@@ -31,3 +31,14 @@ class ProgressSummary(BaseModel):
     learned_words: int
     daily_streak: int
     success_rate: float
+
+class RecommendWord(BaseModel):
+    id: str
+    texten: str
+    transcription: str | None
+    textl: str
+    partofspeech: str
+    examplesentence: str | None
+    difficultylevel: str
+    audiourl: str | None
+    createdat: datetime

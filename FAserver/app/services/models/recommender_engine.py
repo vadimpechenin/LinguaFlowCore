@@ -7,7 +7,8 @@ class RecommendationEngine:
    def recommend(
        self,
        embeddings,
-       known_embeddings
+       known_embeddings,
+       top_k: int = 6
    ):
        if (len(embeddings.shape)==1):
            scores = [self.cosine_similarity(

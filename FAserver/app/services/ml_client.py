@@ -4,6 +4,7 @@ import random
 
 from app.core.settings import ML_SERVICE_URL
 from app.db.models.word import Word
+from app.services.pipelines.text_analyzer import TextAnalyzer
 from app.services.pipelines.word_analyzer import WordAnalyzer
 
 
@@ -52,7 +53,7 @@ class MLClient:
     """
     Интерфейс клиента ML
     """
-    async def recommend(self, words: List[Word]) -> List[dict]:
+    async def recommend(self, words: List[Word], limit: int) -> List[dict]:
         raise NotImplementedError
 
     async def analyze_text(self,
@@ -65,11 +66,11 @@ class MLClientIml(MLClient):
     """
     async def recommend(
             self,
-            words: List[Word]
+            words: List[Word], limit: int
     ) -> List[dict]:
         # простая логика
         analyzer = WordAnalyzer()
-        result = analyzer.recommend(words[:100])
+        result = analyzer.recommend(words,limit)
         # простая логика
         return result
 

@@ -43,7 +43,7 @@ class WordAnalyzer:
        dif_res = self.dif_pred.predict(self.embedding)
        return sum(dif_res)/len(dif_res)
 
-   def recommend(self, words):
+   def recommend(self, words, limit):
        analize_results = self.analyze(words)
        #words_ = self.text_extraction(words)
        #embedding = self.encoder.encode(words_)
@@ -51,17 +51,25 @@ class WordAnalyzer:
        for item in analize_results:
            scores.append(self.rec_eng.recommend(np.asarray(item["embedding"]),self.rec.embeddings)[0])
 
+       sorted_indices = [i for (i, _) in sorted(enumerate(scores), key=lambda x: x[1])]
        results = []
 
-       for idx in range(len(words)):
-           if (scores[idx]<0.7):
-               results.append({
-                   "id": analize_results[idx]["id"],
-                   "texten": analize_results[idx]["word"],
-                   "difficultylevel": analize_results[idx]["cefr"]
-               })
+       for idx in range(limit):
+           results.append({
+               "id": words[sorted_indices[len(sorted_indices)-idx-1]].id,
+               "texten": words[sorted_indices[len(sorted_indices)-idx-1]].texten,
+               "transcription": words[sorted_indices[len(sorted_indices)-idx-1]].transcription,
+               "textl": words[sorted_indices[len(sorted_indices)-idx-1]].textl,
+               "partofspeech": words[sorted_indices[len(sorted_indices)-idx-1]].partofspeech,
+               "examplesentence": words[sorted_indices[len(sorted_indices)-idx-1]].examplesentence,
+               "difficultylevel": words[sorted_indices[len(sorted_indices)-idx-1]].difficultylevel,
+               "audiourl": words[sorted_indices[len(sorted_indices)-idx-1]].audiourl,
+               "createdat": words[sorted_indices[len(sorted_indices)-idx-1]].createdat,
+           })
 
        return results
+
+
    def text_extraction(self, words):
        results = []
        for word in words:

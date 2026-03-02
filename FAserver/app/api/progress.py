@@ -6,6 +6,7 @@ from app.api.deps import get_db
 from app.core.settings import ML_SERVICE_URL
 from app.crud.progress import review_word, seed_user_progress
 from app.api.deps import get_current_user
+from app.crud.setting import get_settings
 from app.db.models.progress import UserWordProgress
 from app.db.models.review import WordReview
 from app.db.models.word import Word
@@ -13,9 +14,10 @@ from app.schemas.progress import (
     ReviewResult,
     ProgressSummary,
     ProgressWordResponse,
-    ProgressWord, ProgressWords, UserProgressFeaturesWord
+    ProgressWord, ProgressWords, UserProgressFeaturesWord, RecommendWord
 )
 from app.services.ml_client import MLClient, get_ml_client
+from app.services.pipelines.review_service import ReviewService
 
 router = APIRouter(prefix="/review", tags=["review"])
 
@@ -23,8 +25,18 @@ router = APIRouter(prefix="/review", tags=["review"])
 
 
 
-
 @router.post("/progress", response_model=UserProgressFeaturesWord)
+def review(
+    data: ProgressWords,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user),
+    ml: MLClient = Depends(get_ml_client),
+):
+    #ml_result = ml.get_next_review(history)
+    result = None
+    return result
+
+@router.post("/progress/seed", response_model=UserProgressFeaturesWord)
 def review(
     data: ProgressWords,
     db: Session = Depends(get_db),
@@ -39,6 +51,38 @@ def review(
         data.is_known
     )
     return result
+
+
+@router.get("/words", response_model=list[RecommendWord])
+async def get_review_words(
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user),
+    ml_client: MLClient = Depends(get_ml_client)
+):
+    #Пока такая заглушка
+    service = ReviewService()
+    words = service.get_words_for_review(
+        db,
+        user.id
+    )
+    user_settings = get_settings(
+        db,
+        user.id
+    )
+    #Обращение к серверу ml для рекомендаций слов
+    result = await ml_client.recommend(
+        words, user_settings.dailywordlimit
+    )
+
+    if result is None:
+        raise HTTPException(
+            status_code=503,
+            detail="ML Service unavailable"
+        )
+
+
+    return words
+
 
 #1 Получить слова для повторения
 @router.get("/next")

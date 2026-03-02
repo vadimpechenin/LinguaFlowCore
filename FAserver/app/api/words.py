@@ -26,30 +26,6 @@ def list_all(db: Session = Depends(get_db), ml_client: MLClient = Depends(get_ml
     return list_words(db)
 
 
-@router.get("/recommend", response_model=list[WordRecomendationResponse])#
-async def recommend_words(user=Depends(get_current_user),
-                    db: Session = Depends(get_db),
-                    ml_client: MLClient = Depends(get_ml_client)):
-    #TODO надо в привязке к пользователю
-    words = list_words(db)
-    """
-    result = ml_client.recommend(
-        words
-    )
-    """
-
-    result = await ml_client.recommend(
-        words
-    )
-
-    if result is None:
-        raise HTTPException(
-            status_code=503,
-            detail="ML Service unavailable"
-        )
-
-    return result
-
 @router.get("/{word_id}", response_model=WordResponse)
 def get_word(word_id: str, db: Session = Depends(get_db)):
     return get_word_by_id(db, word_id)

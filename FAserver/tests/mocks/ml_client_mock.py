@@ -11,10 +11,10 @@ class MockMLClient(MLClient):
     """
     async def recommend(
             self,
-            words
+            words, limit: int
     ):
         analyzer =WordAnalyzer()
-        result = analyzer.recommend(words[:100])
+        result = analyzer.recommend(words,limit)
         # простая логика
         return result
 
