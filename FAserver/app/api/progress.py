@@ -14,10 +14,11 @@ from app.schemas.progress import (
     ReviewResult,
     ProgressSummary,
     ProgressWordResponse,
-    ProgressWord, ProgressWords, UserProgressFeaturesWord, RecommendWord
+    ProgressWord, ProgressWords, UserProgressFeaturesWord, RecommendWord, ProgressWordAnswer, AnswerProgress
 )
 from app.services.ml_client import MLClient, get_ml_client
 from app.services.pipelines.review_service import ReviewService
+from app.services.pipelines.review_updater import ReviewUpdater
 
 router = APIRouter(prefix="/review", tags=["review"])
 
@@ -57,14 +58,15 @@ def review(
 async def get_review_words(
     db: Session = Depends(get_db),
     user=Depends(get_current_user),
-    ml_client: MLClient = Depends(get_ml_client)
 ):
-    #Пока такая заглушка
+
     service = ReviewService()
     words = service.get_words_for_review(
         db,
         user.id
     )
+    #TODO код, который пока использовать не будем
+    """
     user_settings = get_settings(
         db,
         user.id
@@ -79,9 +81,26 @@ async def get_review_words(
             status_code=503,
             detail="ML Service unavailable"
         )
-
+    """
 
     return words
+
+
+@router.post("/answer", response_model=ProgressWordAnswer)
+async def answer(
+    data: AnswerProgress,
+   db: Session = Depends(get_db),
+   user=Depends(get_current_user)
+):
+
+   updater = ReviewUpdater()
+
+   return updater.process_answer(
+       db,
+       user.id,
+       data.wordid,
+       data.iscorrect
+   )
 
 
 #1 Получить слова для повторения

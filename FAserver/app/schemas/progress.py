@@ -42,3 +42,18 @@ class RecommendWord(BaseModel):
     difficultylevel: str
     audiourl: str | None
     createdat: datetime
+
+class ProgressWordAnswer(BaseModel):
+    id: str
+    userid: str
+    wordid: str
+    lastreviewed: datetime | None
+    nextreviewed: datetime | None
+    successrate: float
+    reviewcount: int
+    isknown: bool
+    createdat: datetime
+
+class AnswerProgress(BaseModel):
+    wordid: str
+    iscorrect: bool
