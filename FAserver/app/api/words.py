@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from app.api.deps import get_db, get_current_user
+from app.crud.progress import seed_user_progress
 from app.schemas.word import WordCreate, WordRead, WordResponse, WordRecomendationResponse
-from app.crud.word import create_word, list_words, list_words_duffuculty, get_word_by_id
+from app.crud.word import create_word_by_data, list_words, list_words_duffuculty, get_word_by_id
 from app.services.ml_client import recommend, get_ml_client
 from app.services.ml_client import MLClient
 
@@ -22,7 +23,6 @@ def get_words(
 
 @router.get("/", response_model=list[WordRead])
 def list_all(db: Session = Depends(get_db), ml_client: MLClient = Depends(get_ml_client)):
-    words = list_words(db)
     return list_words(db)
 
 
@@ -37,11 +37,60 @@ def create_word(
     db: Session = Depends(get_db),
     user=Depends(get_current_user),
 ):
-    return create_word(db, data)
+    word = create_word_by_data(db, data)
+    result = seed_user_progress(
+        db,
+        user.id,
+        [word.id],
+        False
+    )
+    return word
 
 
-@router.post("/", response_model=WordRead)
-def create(data: WordCreate, db: Session = Depends(get_db)):
-    return create_word(db, data)
-
-
+@router.post("/from_table", response_model=list[WordRead])
+async def create_word(
+    data: List[WordCreate],
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user),
+    ml_client: MLClient = Depends(get_ml_client)
+):
+    #Загрузить все слова из базы
+    base_words = list_words(db, limit = 100000)
+    #Чисто слова
+    base_texten = []
+    new_texten = []
+    for word in base_words:
+        base_texten.append(word.texten)
+    for word in data:
+        new_texten.append(word.texten)
+    #Выполнить сравнение, формальное
+    unknown = set(new_texten).difference(
+        set(base_texten)
+    )
+    #Индексы не известных слов
+    #indexes = [i for i, x in enumerate(new_texten) if x in unknown]
+    data_filtered = [x for x in data if x.texten in unknown]
+    new_texten=[]
+    for word in data_filtered:
+        new_texten.append(word.texten)
+    #Выполнить сравнение с помощью кодировки
+    result_unknown_words = await ml_client.get_new_words(
+        base_texten, new_texten
+    )
+    #Список сохранить и добавить потом в progress пользователю
+    data_filtered_ = [x for x in data_filtered if x.texten in result_unknown_words]
+    result_words = []
+    result_indexes = []
+    for data_ in data_filtered_:
+        if (len(data_.difficultylevel)>2):
+            data_.difficultylevel = data_.difficultylevel[0:2]
+        word = create_word_by_data(db, data_)
+        result_words.append(word)
+        result_indexes.append(word.id)
+    result = seed_user_progress(
+        db,
+        user.id,
+        result_indexes,
+        False
+    )
+    return result_words

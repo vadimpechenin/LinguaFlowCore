@@ -1,5 +1,5 @@
 def test_get_words(client):
-       # 2️⃣ получаем список слов
+       # получаем список слов
     response = client.get("/words/")
 
     assert response.status_code == 200

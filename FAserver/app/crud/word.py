@@ -4,7 +4,7 @@ from app.db.core.support.UUIDClass import UUIDClass
 from app.db.models import Word, UserWordProgress
 
 
-def create_word(db: Session, data) -> Word:
+def create_word_by_data(db: Session, data) -> Word:
     ID = UUIDClass.geterateUUIDWithout_()
     word = Word(**data.dict())
     word.id = ID

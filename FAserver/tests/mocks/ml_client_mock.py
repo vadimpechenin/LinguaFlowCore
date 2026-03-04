@@ -1,4 +1,4 @@
-from typing import Set, Dict
+from typing import Set, Dict, List
 
 from app.services.ml_client import MLClient
 from app.services.pipelines.text_analyzer import TextAnalyzer
@@ -15,6 +15,14 @@ class MockMLClient(MLClient):
     ):
         analyzer =WordAnalyzer()
         result = analyzer.recommend(words,limit)
+        # простая логика
+        return result
+
+
+    async def get_new_words(self, base_words: List[str], new_words: List[str]) -> List[str]:
+        # простая логика
+        analyzer = WordAnalyzer()
+        result = analyzer.get_unknown_words(base_words, new_words)
         # простая логика
         return result
 

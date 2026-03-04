@@ -13,6 +13,7 @@ class WordCreate(BaseModel):
     #audiourl: Optional[str]
     #createdat: datetime
 
+
 class WordRead(WordCreate):
     id: str
 
@@ -23,7 +24,7 @@ class WordResponse(BaseModel):
     texten: str
     transcription: str | None
     textl: str
-    partofspeech: str
+    partofspeech: str | None
     examplesentence: str | None
     difficultylevel: str
     audiourl: str | None

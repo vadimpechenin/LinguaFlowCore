@@ -1,5 +1,5 @@
-def test_get_words(client):
-    # 1️⃣ добавляем слова
+def test_create_words(client, auth_headers):
+    # добавляем слова
     words = [
         {
             "texten": "apple",
@@ -20,5 +20,5 @@ def test_get_words(client):
     ]
 
     for word in words:
-        response = client.post("/words/", json=word)
+        response = client.post("/words", json=word, headers=auth_headers)
         assert response.status_code == 200

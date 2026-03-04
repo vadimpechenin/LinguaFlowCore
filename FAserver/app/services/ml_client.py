@@ -56,6 +56,9 @@ class MLClient:
     async def recommend(self, words: List[Word], limit: int) -> List[dict]:
         raise NotImplementedError
 
+    async def get_new_words(self, base_words: List[str], new_words: List[str]) -> List[str]:
+        raise NotImplementedError
+
     async def analyze_text(self,
             content: str, user_words: Set[str]) -> Dict:
         raise NotImplementedError
@@ -71,6 +74,13 @@ class MLClientIml(MLClient):
         # простая логика
         analyzer = WordAnalyzer()
         result = analyzer.recommend(words,limit)
+        # простая логика
+        return result
+
+    async def get_new_words(self, base_words: List[str], new_words: List[str]) -> List[str]:
+        # простая логика
+        analyzer = WordAnalyzer()
+        result = analyzer.get_unknown_words(base_words, new_words)
         # простая логика
         return result
 

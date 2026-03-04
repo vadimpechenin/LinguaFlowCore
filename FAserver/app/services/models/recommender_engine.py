@@ -10,6 +10,7 @@ class RecommendationEngine:
        known_embeddings,
        top_k: int = 6
    ):
+       #Возращает максимальное значение косинусного сходства (scores = 0 - новое слово; 1 - полностью известное)
        if (len(embeddings.shape)==1):
            scores = [self.cosine_similarity(
                embeddings,

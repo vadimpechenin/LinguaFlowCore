@@ -4,7 +4,7 @@ from pydantic import BaseModel, ConfigDict
 
 class SettingResponse(BaseModel):
     userid: str
-    createdat: str= "ru"
+    interfacelanguage: str= "ru"
     learninglanguage: str= "en"
     preferredvoice: str
     dailywordlimit: int
@@ -15,7 +15,7 @@ class SettingResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class SettingUpdate(BaseModel):
-    createdat: str | None
+    interfacelanguage: str | None
     learninglanguage: str | None
     preferredvoice: str | None
     dailywordlimit: int | None

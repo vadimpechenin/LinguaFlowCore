@@ -17,15 +17,28 @@ class WordAnalyzer:
        self.rec = RecommendationLoader()
        self.rec_eng = RecommendationEngine()
        self.dif_pred = DifficultyPredictor()
-       self.embedding = None
+
 
    def calc_embedding(self, words):
-        self.embedding = self.encoder.encode(words)
+        return self.encoder.encode(words)
+
+
+   def get_unknown_words(self, base_words, new_words):
+       base_embedding = self.calc_embedding(base_words)
+       new_embedding = self.calc_embedding(new_words)
+       scores = []
+       for item in new_embedding:
+           scores.append(self.rec_eng.recommend(np.asarray(item), base_embedding)[0])
+       result = []
+       for index in range(len(scores)):
+           if (scores[index]<0.94):
+               result.append(new_words[index])
+       return result
 
    def analyze(self, words):
        words_ = self.text_extraction(words)
-       self.calc_embedding(words_)
-       cefr = self.cefr.predict(self.embedding)
+       embedding = self.calc_embedding(words_)
+       cefr = self.cefr.predict(embedding)
        results = []
 
        for idx in range(len(words)):
@@ -33,14 +46,14 @@ class WordAnalyzer:
                "id": words[idx].id,
                "word": words_[idx],
                "cefr": cefr[idx],
-               "embedding": self.embedding[idx].tolist()
+               "embedding": embedding[idx].tolist()
            })
 
        return results
 
    def dif_predictor(self, words):
-       self.calc_embedding(words)
-       dif_res = self.dif_pred.predict(self.embedding)
+       embedding = self.calc_embedding(words)
+       dif_res = self.dif_pred.predict(embedding)
        return sum(dif_res)/len(dif_res)
 
    def recommend(self, words, limit):
