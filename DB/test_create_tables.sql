@@ -90,12 +90,18 @@ CREATE TABLE public.textvocabularystats (
 CREATE TABLE public.exams (
     id varchar(50) PRIMARY KEY,
 	userid varchar(50),
-    title VARCHAR(255) NOT NULL,
     difficultylevel VARCHAR(2),
-    score REAL,
+    size INTEGER,
     takenat TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
-
+-- ---------- EXAMRESULTS ----------
+CREATE TABLE public.examresults (
+    id varchar(50) PRIMARY KEY,
+	examid varchar(50),
+	userid varchar(50),
+    score INTEGER,
+	estimatedlevel VARCHAR(2)
+);
 -- ---------- ML WORD FEATURES (OPTIONAL) ----------
 CREATE TABLE public.mlwordfeatures (
     wordid varchar(50) PRIMARY KEY,

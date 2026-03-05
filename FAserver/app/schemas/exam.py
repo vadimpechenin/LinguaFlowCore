@@ -1,23 +1,34 @@
-from pydantic import BaseModel
+from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict
 from typing import List
 
 #TODO еще может меняться
 class ExamStart(BaseModel):
-    title: str
     difficultylevel: str
-    score: float
+    size: int
 
 class ExamQuestion(BaseModel):
     wordid: str
     question: str
 
 class ExamResponse(BaseModel):
-    title: str
+    examid: str
+    questions: List[dict]
     #questions: List[ExamQuestion]
+
+class ExamResponseAllFields(BaseModel):
+    id : str
+    userid : str
+    difficultylevel: str
+    size: int
+    takenat: datetime
+
+    #model_config = ConfigDict(from_attributes=True)
 
 class ExamSubmit(BaseModel):
     answers: list
 
 class ExamResult(BaseModel):
-    score: float
-    estimated_level: str
+    score: int
+    estimatedlevel: str

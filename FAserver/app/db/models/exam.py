@@ -10,9 +10,8 @@ class Exam(Base):
         nullable=False
     )
 
-    title = Column(String(255), nullable=False)
     difficultylevel = Column(String(2))
-    score = Column(Float)
+    size = Column(Integer)
 
     takenat = Column(
         TIMESTAMP(timezone=True),

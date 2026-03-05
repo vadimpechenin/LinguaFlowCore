@@ -1,8 +1,8 @@
 def test_create_exam(client, auth_headers):
+    setings = client.get("/user-settings", headers=auth_headers).json()
     payload = {
-        "title": "A1 Vocabulary Test",
-        "difficultylevel": "A1",
-        "score": 0,
+        "difficultylevel": "B2",
+        "size": setings['dailywordlimit']*2,
     }
 
     res = client.post(
@@ -14,7 +14,7 @@ def test_create_exam(client, auth_headers):
     assert res.status_code == 200
     data = res.json()
 
-    assert data["title"] == "A1 Vocabulary Test"
+    assert len(data["questions"] )== 20
     #assert len(data["questions"]) <= 5
 
 

@@ -1,18 +1,40 @@
+from typing import List
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-import httpx
 
 from app.api.deps import get_current_user
 from app.api.deps import get_db
-from app.core.settings import ML_SERVICE_URL
-from app.db.models.exam import Exam
-from app.schemas.exam import ExamStart, ExamResponse, ExamResult
-from app.crud.exam import create_exam
-
+from app.schemas.exam import ExamStart, ExamResponse, ExamResult, ExamSubmit, ExamResponseAllFields
+from app.crud.exam import ExamService
 
 router = APIRouter(prefix="/exams", tags=["Exams"])
 
+@router.get("", response_model=List[ExamResponseAllFields])
+async def get_exam(
+    user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    :param data:
+    :param user:
+    :param db:
+    :return:
+    """
+    service = ExamService()
+    exams = service.get_exams(
+        db,
+        user.id,10
+    )
+    result = []
+    for item in exams:
+        result.append({ "id" : item.id,
+                        "userid" : item.userid,
+                        "difficultylevel": item.difficultylevel,
+                        "size": item.size,
+                        "takenat": item.takenat})
 
+    return result
 @router.post("/start", response_model=ExamResponse)
 async def start_exam(
     data: ExamStart,
@@ -25,44 +47,28 @@ async def start_exam(
     :param db:
     :return:
     """
-    """
-    Пока убираем, нет этого сервиса
-    async with httpx.AsyncClient() as client:
-        ml_resp = await client.post(
-            f"{ML_SERVICE_URL}/ml/exam/start",
-            json={
-                "difficultylevel": data.difficulty,
-                "size": data.size,
-                "userid": user.id,
-            },
-        )
-        ml_resp.raise_for_status()
-        questions = ml_resp.json()["questions"]
-    """
-    #TODO упаковать в crud
-    exam =create_exam(db, user, data)
+    service = ExamService()
+    return service.start_exam(
+        db,
+        user.id,
+        data.difficultylevel,
+        data.size
+    )
 
 
-    return {"title": exam.title}#, "questions": questions # ML
-
-
-@router.post("/{examid}/submit", response_model=ExamResult)
+@router.post("/{exam_id}/submit", response_model=ExamResult)
 async def submit_exam(
-    examid: int,
-    payload: dict,
+    exam_id: str,
+    payload: ExamSubmit,
     user=Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    async with httpx.AsyncClient() as client:
-        ml_resp = await client.post(
-            f"{ML_SERVICE_URL}/ml/exam/evaluate",
-            json=payload,
-        )
-        ml_resp.raise_for_status()
-        result = ml_resp.json()
-    # TODO упаковать в crud
-    exam = db.query(Exam).get(examid)
-    exam.score = result["score"]
-    db.commit()
-
+    service = ExamService()
+    result = service.submit_exam(
+        db,
+        exam_id,
+        user.id,
+        payload.answers
+    )
     return result
+
