@@ -14,7 +14,8 @@ def test_get_recommend(client, auth_headers):
     for word in data:
         payload = {
             "wordid": word["id"],
-            "iscorrect": True
+            "iscorrect": True,
+            "response_time_ms": 1200
         }
         answer = client.post(
             "/review/answer",

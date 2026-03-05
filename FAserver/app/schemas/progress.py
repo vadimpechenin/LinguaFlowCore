@@ -57,3 +57,4 @@ class ProgressWordAnswer(BaseModel):
 class AnswerProgress(BaseModel):
     wordid: str
     iscorrect: bool
+    response_time_ms: int

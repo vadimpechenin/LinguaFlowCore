@@ -14,7 +14,7 @@ from app.services.ml_client import get_ml_client, MLClient
 router = APIRouter(prefix="/texts", tags=["Texts"])
 
 
-@router.post("/", response_model=TextResponse)
+@router.post("", response_model=TextResponse)
 async def submit_text(
     data: TextRequest,
     user=Depends(get_current_user),
@@ -37,7 +37,7 @@ async def load_text(
 ):
     return get_text_by_title(db, text_title, user.id)
 
-@router.post("/{text_title}/analyze", response_model=TextAnalyzeResponse)#
+@router.post("/{text_c}/analyze", response_model=TextAnalyzeResponse)#
 async def analyze(
     text_title: str,
     user=Depends(get_current_user),

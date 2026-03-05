@@ -99,7 +99,8 @@ async def answer(
        db,
        user.id,
        data.wordid,
-       data.iscorrect
+       data.iscorrect,
+       data.response_time_ms
    )
 
 

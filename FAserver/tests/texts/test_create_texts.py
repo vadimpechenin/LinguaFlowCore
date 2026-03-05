@@ -39,7 +39,7 @@ def test_create_text(client, auth_headers):
     }
 
     res = client.post(
-        "/texts/",
+        "/texts",
         json=payload,
         headers=auth_headers,
     )
