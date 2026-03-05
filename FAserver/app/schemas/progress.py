@@ -18,19 +18,19 @@ class ProgressWords(BaseModel):
     is_known: bool
 
 class ProgressWordResponse(BaseModel):
-    reviewcount: int
-    successrate: float
-    nextreviewed: datetime | None
+    reviewcount: int| None
+    successrate: float| None
+    nextreviewat: datetime | None
 
 class UserProgressFeaturesWord(BaseModel):
     progress_created: int
     features_created: int
 
 class ProgressSummary(BaseModel):
-    total_words: int
-    learned_words: int
-    daily_streak: int
-    success_rate: float
+    total_words: int | None
+    learned_words: int | None
+    daily_streak: int | None
+    success_rate: float| None
 
 class RecommendWord(BaseModel):
     id: str

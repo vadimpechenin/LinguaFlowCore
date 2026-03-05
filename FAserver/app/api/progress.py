@@ -17,13 +17,11 @@ from app.schemas.progress import (
     ProgressWord, ProgressWords, UserProgressFeaturesWord, RecommendWord, ProgressWordAnswer, AnswerProgress
 )
 from app.services.ml_client import MLClient, get_ml_client
+from app.services.pipelines.progress_service import ProgressService
 from app.services.pipelines.review_service import ReviewService
 from app.services.pipelines.review_updater import ReviewUpdater
 
 router = APIRouter(prefix="/review", tags=["review"])
-
-
-
 
 
 @router.post("/progress", response_model=UserProgressFeaturesWord)
@@ -53,7 +51,7 @@ def review(
     )
     return result
 
-
+#1 Получить слова для повторения
 @router.get("/words", response_model=list[RecommendWord])
 async def get_review_words(
     db: Session = Depends(get_db),
@@ -86,6 +84,7 @@ async def get_review_words(
     return words
 
 
+#2 Отправка результата ответа
 @router.post("/answer", response_model=ProgressWordAnswer)
 async def answer(
     data: AnswerProgress,
@@ -103,6 +102,30 @@ async def answer(
        data.response_time_ms
    )
 
+
+#4 Общий прогресс
+@router.get("/progress/summary", response_model=ProgressSummary)
+def progress_summary(user=Depends(get_current_user), db: Session = Depends(get_db)):
+    service = ProgressService()
+    return service.get_summary(db, user.id)
+
+"""
+return ProgressSummary(
+        total_words=total_words,
+        learned_words=learned,
+        daily_streak=0,  # можно добавить позже
+        success_rate=round(success_rate, 2),
+    )
+"""
+#3 Прогресс по слову
+@router.get("/progress/word/{word_id}", response_model=ProgressWordResponse)
+def word_progress(
+    word_id: str,
+    user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    service = ProgressService()
+    return service.get_word_progress(db, user.id, word_id)
 
 #1 Получить слова для повторения
 @router.get("/next")
@@ -128,38 +151,7 @@ async def get_next_review(user=Depends(get_current_user), db: Session = Depends(
     word_ids = [w["word_id"] for w in resp.json()["recommended_words"]]
     return db.query(Word).filter(Word.id.in_(word_ids)).all()
 
-#4 Общий прогресс
-@router.get("/progress/summary", response_model=ProgressSummary)
-def progress_summary(user=Depends(get_current_user), db: Session = Depends(get_db)):
-    total_words = db.query(Word).count()
-    learned = (
-        db.query(UserWordProgress)
-        .filter(
-            UserWordProgress.user_id == user.id,
-            UserWordProgress.success_rate > 0.8,
-        )
-        .count()
-    )
 
-    avg_success = (
-        db.query(UserWordProgress)
-        .filter_by(user_id=user.id)
-        .with_entities(UserWordProgress.success_rate)
-        .all()
-    )
-
-    success_rate = (
-        sum(r[0] for r in avg_success) / len(avg_success)
-        if avg_success
-        else 0.0
-    )
-
-    return ProgressSummary(
-        total_words=total_words,
-        learned_words=learned,
-        daily_streak=0,  # можно добавить позже
-        success_rate=round(success_rate, 2),
-    )
 
 #2 Отправка результата ответа
 @router.post("/review/{user_id}/{word_id}")
@@ -236,19 +228,6 @@ def review(
     return {"status": "ok"}
 
 
-#3 Прогресс по слову
-@router.get("/progress/word/{word_id}", response_model=ProgressWordResponse)
-def word_progress(
-    word_id: int,
-    user=Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    progress = (
-        db.query(UserWordProgress)
-        .filter_by(user_id=user.id, word_id=word_id)
-        .first()
-    )
-    if not progress:
-        raise HTTPException(404, "No progress")
-    return progress
+
+
 
