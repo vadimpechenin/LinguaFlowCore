@@ -28,14 +28,16 @@ class ExamGenerator:
                questions.append({
                    "word_id": w.id,
                    "type": task_type,
-                   "question": f"Translate: {w.texten}"
+                   "question": f"Translate: {w.texten}",
+                               "options": None
                })
 
            elif task_type == "flashcard_reverse":
                questions.append({
                    "word_id": w.id,
                    "type": task_type,
-                   "question": f"Translate: {w.textl}"
+                   "question": f"Translate: {w.textl}",
+                               "options": None
                })
 
            elif task_type == "multiple_choice":
@@ -52,7 +54,8 @@ class ExamGenerator:
                questions.append({
                    "word_id": w.id,
                    "type": task_type,
-                   "question": f"Unscramble: {scrambled}"
+                   "question": f"Unscramble: {scrambled}",
+                               "options": None
                })
 
        return questions

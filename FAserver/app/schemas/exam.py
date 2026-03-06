@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 from typing import List
 
 #TODO еще может меняться
@@ -8,14 +8,9 @@ class ExamStart(BaseModel):
     difficultylevel: str
     size: int
 
-class ExamQuestion(BaseModel):
-    wordid: str
-    question: str
-
 class ExamResponse(BaseModel):
     examid: str
     questions: List[dict]
-    #questions: List[ExamQuestion]
 
 class ExamResponseAllFields(BaseModel):
     id : str
@@ -23,8 +18,6 @@ class ExamResponseAllFields(BaseModel):
     difficultylevel: str
     size: int
     takenat: datetime
-
-    #model_config = ConfigDict(from_attributes=True)
 
 class ExamSubmit(BaseModel):
     answers: list
