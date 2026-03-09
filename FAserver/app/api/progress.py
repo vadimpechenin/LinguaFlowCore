@@ -41,7 +41,8 @@ async def get_review_words(
     db: Session = Depends(get_db),
     user=Depends(get_current_user),
 ):
-
+    if (user!=None):
+        print(user.id)
     service = ReviewService()
     words = service.get_words_for_review(
         db,
@@ -64,7 +65,7 @@ async def get_review_words(
             detail="ML Service unavailable"
         )
     """
-
+    print(str(len(words)))
     return words
 
 

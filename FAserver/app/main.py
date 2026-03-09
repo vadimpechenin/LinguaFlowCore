@@ -4,6 +4,8 @@ from fastapi import FastAPI
 from app.api import auth, users, words, progress, exams, settings, texts
 from fastapi.middleware.cors import CORSMiddleware
 
+
+#if __name__=="__main__":
 app = FastAPI(title="English Learning API")
 
 #Блок добавления связи с фронтэндом

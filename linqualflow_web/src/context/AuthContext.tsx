@@ -1,39 +1,64 @@
-import { createContext, useState, useEffect } from "react";
-import { getProfile } from "../api/auth";
+import { createContext, useState, useEffect } from "react"
 
-export const AuthContext = createContext<any>(null);
+interface AuthContextType {
+    token: string | null
+    loginUser: (token: string) => void
+    logout: () => void
+}
+
+export const AuthContext = createContext<AuthContextType | null>(null)
 
 export const AuthProvider = ({ children }: any) => {
 
-    const [user, setUser] = useState(null);
+    const [token, setToken] = useState<string | null>(null)
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
 
-        const token = localStorage.getItem("token");
+        const storedToken = localStorage.getItem("token")
 
-        if (token) {
-            getProfile().then(res => setUser(res.data));
+        if (storedToken) {
+            setToken(storedToken)
         }
 
-    }, []);
+        setLoading(false)
 
-    const loginUser = (token: string) => {
+    }, [])
 
-        localStorage.setItem("token", token);
+    const loginUser = (newToken: string) => {
 
-    };
+        localStorage.setItem("token", newToken)
+
+        setToken(newToken)
+
+    }
 
     const logout = () => {
 
-        localStorage.removeItem("token");
-        setUser(null);
+        localStorage.removeItem("token")
 
-    };
+        setToken(null)
+
+    }
+
+    if (loading) {
+        return <div>Loading...</div>
+    }
 
     return (
-        <AuthContext.Provider value={{user, loginUser, logout}}>
-            {children}
-        </AuthContext.Provider>
-    );
 
-};
+        <AuthContext.Provider
+            value={{
+                token,
+                loginUser,
+                logout
+            }}
+        >
+
+            {children}
+
+        </AuthContext.Provider>
+
+    )
+
+}

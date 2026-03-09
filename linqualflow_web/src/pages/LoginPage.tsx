@@ -7,8 +7,8 @@ export default function LoginPage() {
 
     const { loginUser } = useContext(AuthContext);
 
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
+    const [username, setUsername] = useState("test_user_");
+    const [password, setPassword] = useState("password123");
 
     const navigate = useNavigate()
 

@@ -18,7 +18,22 @@ export const login = (data: {
 }) => {
 
     return API.post("/auth/login", data);
+    /*
+    const params = new URLSearchParams()
 
+    params.append("username",data.username)
+    params.append("password",data.password)
+
+    return API.post(
+        "/auth/login",
+        params,
+        {
+            headers:{
+                "Content-Type":"application/x-www-form-urlencoded"
+            }
+        }
+    )
+    */
 };
 
 export const getProfile = () => {
