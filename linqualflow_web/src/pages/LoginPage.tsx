@@ -58,10 +58,12 @@ export default function LoginPage() {
                     onChange={e => setPassword(e.target.value)}
                 />
 
-                <button type="submit">Login</button>
+                <button type="submit">Войти</button>
 
             </form>
-
+            <button onClick={() => navigate('/register')}>
+                Зарегистрироваться
+            </button>
         </div>
 
     );

@@ -22,6 +22,7 @@ npm install axios
 npm install react-router-dom
 npm install jwt-decode
 npm install @mui/material @emotion/react @emotion/styled
+npm install lucide-react
 
 
 ## 3  Project launch
