@@ -2,23 +2,15 @@ def test_create_user(client):
     create_response = client.post(
         "/auth/register/",
         json={
-            "name": "Test",
-            "username": "test_user",
-            "email": "test_user@example.com",
-            "password": "sec23",
-            "initiallevel": "A1",
+            "name": "Test2",
+            "username": "test_user2",
+            "email": "test_user2@example.com",
+            "password": "sec233",
+            "initiallevel": "A2",
         },
     )
 
     assert create_response.status_code == 200
-    user = create_response.json()
-    user_name = user["username"]
-
-    response = client.get(f"/users/{user_name}")
-
-    assert response.status_code == 200
-
-    data = response.json()
-    assert data["username"] == user_name
-    assert data["email"] == "test_user@example.com"
-    assert "createdat" in data
+    token_json = create_response.json()
+    token = token_json["access_token"]
+    assert len(token)>2

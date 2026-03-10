@@ -18,7 +18,9 @@ def register(data: UserRegister, db: Session = Depends(get_db)):
     if db.query(User).filter(User.username == data.username).first():
         raise HTTPException(400, "User already exists")
 
-    return create_user(db, data.name, data.username, data.email, data.password, data.initiallevel)
+    user = create_user(db, data.name, data.username, data.email, data.password, data.initiallevel)
+    token = create_access_token({"sub": str(user.id)})
+    return {"access_token": token}
 
 
 @router.post("/login", response_model=Token)#

@@ -19,19 +19,19 @@ export default function Dashboard() {
                     <>
                         <button onClick={() => navigate('/settings')} style={buttonStyle}>
                             <Settings size={20} />
-                            <span>Настройки</span>
+                            <span>настройки</span>
                         </button>
 
                         {/* Используем функцию logout из контекста */}
                         <button onClick={logoutUser} style={logoutButtonStyle}>
                             <LogOut size={20} />
-                            <span>Выйти</span>
+                            <span>выйти</span>
                         </button>
                     </>
                 ) : (
                     <button onClick={() => navigate('/login')} style={buttonStyle}>
                         <UserCircle size={20} />
-                        <span>Войти</span>
+                        <span>войти</span>
                     </button>
                 )}
             </div>

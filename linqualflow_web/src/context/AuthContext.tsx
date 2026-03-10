@@ -1,64 +1,87 @@
-import { createContext, useState, useEffect } from "react"
+import React, { createContext, useState, useEffect } from "react";
+import axios from "axios";
 
-interface AuthContextType {
-    token: string | null
-    loginUser: (token: string) => void
-    logout: () => void
+interface User {
+    id: string;
+    username: string;
 }
 
-export const AuthContext = createContext<AuthContextType | null>(null)
+interface AuthContextType {
+    user: User | null;
+    loginUser: (token: string) => Promise<void>;
+    logoutUser: () => void;
+}
+
+export const AuthContext = createContext<AuthContextType>({
+    user: null,
+    loginUser: async () => {},
+    logoutUser: () => {}
+});
 
 export const AuthProvider = ({ children }: any) => {
 
-    const [token, setToken] = useState<string | null>(null)
-    const [loading, setLoading] = useState(true)
+    const [user, setUser] = useState<User | null>(null);
 
+    // Проверка токена при старте
     useEffect(() => {
 
-        const storedToken = localStorage.getItem("token")
+        const token = localStorage.getItem("token");
 
-        if (storedToken) {
-            setToken(storedToken)
+        if (token) {
+            loadUser(token);
         }
 
-        setLoading(false)
+    }, []);
 
-    }, [])
+    const loadUser = async (token: string) => {
 
-    const loginUser = (newToken: string) => {
+        try {
 
-        localStorage.setItem("token", newToken)
+            const res = await axios.get(
+                "http://localhost:8000/users/me",
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
 
-        setToken(newToken)
+            setUser(res.data);
 
-    }
+        } catch {
 
-    const logout = () => {
+            localStorage.removeItem("token");
+            setUser(null);
 
-        localStorage.removeItem("token")
+        }
 
-        setToken(null)
+    };
 
-    }
+    const loginUser = async (token: string) => {
 
-    if (loading) {
-        return <div>Loading...</div>
-    }
+        localStorage.setItem("token", token);
+
+        await loadUser(token);
+
+    };
+
+    const logoutUser = () => {
+
+        localStorage.removeItem("token");
+
+        setUser(null);
+
+    };
 
     return (
-
         <AuthContext.Provider
             value={{
-                token,
+                user,
                 loginUser,
-                logout
+                logoutUser
             }}
         >
-
             {children}
-
         </AuthContext.Provider>
-
-    )
-
-}
+    );
+};

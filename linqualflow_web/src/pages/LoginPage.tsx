@@ -25,7 +25,7 @@ export default function LoginPage() {
 
             const token = res.data.access_token
 
-            loginUser(token)
+            await loginUser(token)
 
             navigate("/")
 
