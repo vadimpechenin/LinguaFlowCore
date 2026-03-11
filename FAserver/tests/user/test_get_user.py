@@ -4,12 +4,16 @@ def test_get_user(client):
             "username": "test_user",
             "password": "sec23"},
                            )
-
-    username = "test_user"
-    response = client.get(f"/users/{username}")
-
     assert response.status_code == 200
     data = response.json()
-    assert data["email"] == "test_user@example.com"
+    token = data["access_token"]
 
-    response = client.get("/users/me")
+    response = client.get("/users/me2",headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["username"] == "test_user"
+
+    response = client.get("/users/me", headers = {"Authorization":f"Bearer{token}"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["username"] == "test_user"

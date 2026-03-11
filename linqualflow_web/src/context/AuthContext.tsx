@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }: any) => {
         try {
 
             const res = await axios.get(
-                "http://localhost:8000/users/me",
+                "http://localhost:8000/users/me2",
                 {
                     headers: {
                         Authorization: `Bearer ${token}`

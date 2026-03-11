@@ -13,7 +13,7 @@ from app.crud.security import SECRET_KEY, ALGORITHM
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
-
+oauth2_scheme2 = OAuth2PasswordBearer(tokenUrl="token")
 
 def get_db() -> Generator[Session, None, None]:
     #print("Зашел в db")
@@ -30,6 +30,22 @@ def get_db() -> Generator[Session, None, None]:
 
 def get_current_user(
     token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db),
+) -> User:
+    #print("Зашел в get_current_user")
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        userid: str = payload.get("sub")
+    except JWTError:
+        raise HTTPException(401, "Invalid token")
+
+    user = db.query(User).get(userid)
+    if not user:
+        raise HTTPException(404, "User not found")
+    return user
+
+def get_current_user2(
+    token: str = Depends(oauth2_scheme2),
     db: Session = Depends(get_db),
 ) -> User:
     #print("Зашел в get_current_user")
