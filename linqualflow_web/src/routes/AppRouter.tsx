@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
+import SettingsPage from "../pages/SettingsPage";
 import Dashboard from "../pages/Dashboard";
 import ReviewPage from "../pages/ReviewPage";
 
@@ -18,6 +19,8 @@ export default function AppRouter(){
                 <Route path="/login" element={<LoginPage/>} />
 
                 <Route path="/register" element={<RegisterPage/>} />
+
+                <Route path="/user-settings" element={<SettingsPage/>} />
 
                 <Route path="/review" element={<ReviewPage />} />
 

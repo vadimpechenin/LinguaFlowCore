@@ -6,6 +6,7 @@ from app.api.deps import get_db
 from app.core.settings import ML_SERVICE_URL
 from app.crud.progress import review_word, seed_user_progress
 from app.api.deps import get_current_user
+from app.crud.setting import get_settings
 from app.schemas.progress import (
     ProgressSummary,
     ProgressWordResponse,
@@ -44,9 +45,14 @@ async def get_review_words(
     if (user!=None):
         print(user.id)
     service = ReviewService()
-    words = service.get_words_for_review(
+    user_settings = get_settings(
         db,
         user.id
+    )
+    words = service.get_words_for_review(
+        db,
+        user.id,
+        user_settings.dailywordlimit
     )
     #TODO код, который пока использовать не будем
     """

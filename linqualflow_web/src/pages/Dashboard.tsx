@@ -17,7 +17,7 @@ export default function Dashboard() {
             <div style={{ position: 'absolute', top: '20px', right: '20px', display: 'flex', gap: '10px' }}>
                 {isLoggedIn ? (
                     <>
-                        <button onClick={() => navigate('/settings')} style={buttonStyle}>
+                        <button onClick={() => navigate('/user-settings')} style={buttonStyle}>
                             <Settings size={20} />
                             <span>настройки</span>
                         </button>
