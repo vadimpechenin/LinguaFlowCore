@@ -109,3 +109,16 @@ CREATE TABLE public.mlwordfeatures (
     avgsuccessrate REAL,
     avgreviewinterval REAL
 );
+
+-- ---------- Слова в сессии ----------
+CREATE TABLE public.reviewsessions (
+    id varchar(50) PRIMARY KEY,
+    userid varchar(50),
+    createdat TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+);
+
+CREATE TABLE public.reviewsessionswords (
+    id varchar(50) PRIMARY KEY,
+    sessionid varchar(50),
+    wordid varchar(50)
+);

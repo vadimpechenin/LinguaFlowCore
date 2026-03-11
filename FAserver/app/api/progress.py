@@ -39,6 +39,7 @@ def review(
 #1 Получить слова для повторения
 @router.get("/words", response_model=list[RecommendWord])
 async def get_review_words(
+    refresh:bool = False,
     db: Session = Depends(get_db),
     user=Depends(get_current_user),
 ):
@@ -52,8 +53,10 @@ async def get_review_words(
     words = service.get_words_for_review(
         db,
         user.id,
-        user_settings.dailywordlimit
+        user_settings.dailywordlimit,
+        refresh
     )
+    return words
     #TODO код, который пока использовать не будем
     """
     user_settings = get_settings(
@@ -71,8 +74,6 @@ async def get_review_words(
             detail="ML Service unavailable"
         )
     """
-    print(str(len(words)))
-    return words
 
 
 #2 Отправка результата ответа
