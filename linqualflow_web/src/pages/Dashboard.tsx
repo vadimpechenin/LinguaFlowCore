@@ -19,19 +19,19 @@ export default function Dashboard() {
                     <>
                         <button onClick={() => navigate('/user-settings')} style={buttonStyle}>
                             <Settings size={20} />
-                            <span>настройки</span>
+                            <span>Settings</span>
                         </button>
 
                         {/* Используем функцию logout из контекста */}
                         <button onClick={logoutUser} style={logoutButtonStyle}>
                             <LogOut size={20} />
-                            <span>выйти</span>
+                            <span>Exit</span>
                         </button>
                     </>
                 ) : (
                     <button onClick={() => navigate('/login')} style={buttonStyle}>
                         <UserCircle size={20} />
-                        <span>войти</span>
+                        <span>Login</span>
                     </button>
                 )}
             </div>
@@ -47,6 +47,17 @@ export default function Dashboard() {
                             📚 Review words
                         </button>
                     </li>
+                    {/* Кнопка отобразится только если пользователь авторизован */}
+                    {isLoggedIn && (
+                        <li style={{ marginBottom: '15px' }}>
+                            <button
+                                onClick={() => navigate('/words')}
+                                style={{ ...buttonStyle, width: '220px', justifyContent: 'center' }}
+                            >
+                                📥 Load new words
+                            </button>
+                        </li>
+                    )}
                     <li>📖 Text analysis (coming soon)</li>
                     <li>📊 Statistics (coming soon)</li>
                     <li>📝 Exams (coming soon)</li>
