@@ -1,7 +1,6 @@
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app.crud.progress import get_due_words, get_weak_words, get_new_words
 from app.db.models import UserWordProgress, Word
 from app.db.models.review_session import ReviewSession
 from app.db.models.review_session_words import ReviewSessionWord
