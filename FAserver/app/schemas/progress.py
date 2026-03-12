@@ -33,6 +33,9 @@ class RecommendWord(BaseModel):
     audiourl: str | None
     createdat: datetime
 
+class RefreshWords(BaseModel):
+    refresh:bool
+
 class ProgressWordAnswer(BaseModel):
     id: str
     userid: str

@@ -1,5 +1,5 @@
 import API from "./api"
-import type { RecommendWord, AnswerProgress, ProgressWordAnswer } from "../types/review"
+import type { RecommendWord, AnswerProgress, ProgressWordAnswer, RefreshWords } from "../types/review"
 
 export const getReviewWords = async (): Promise<RecommendWord[]> => {
 
@@ -17,3 +17,11 @@ export const sendReviewAnswer = async (
         answer)
     return res.data
 }
+
+export const fetchReviewWords = async (refresh: RefreshWords) => {
+    // Отправляем GET запрос с параметром refresh
+    console.log("Обновление: " + refresh.refresh)
+
+    const res = await API.post("/review/words",refresh);
+    return res.data;
+};

@@ -39,7 +39,14 @@ export default function Dashboard() {
             <div>
                 <h1>LinqualFlow</h1>
                 <ul style={{ marginTop: '40px' }}>
-                    <li>📚 Review words (coming soon)</li>
+                    <li style={{ marginBottom: '15px' }}>
+                        <button
+                            onClick={() => navigate('/prereview')}
+                            style={{ ...buttonStyle, width: '200px', justifyContent: 'center' }}
+                        >
+                            📚 Review words
+                        </button>
+                    </li>
                     <li>📖 Text analysis (coming soon)</li>
                     <li>📊 Statistics (coming soon)</li>
                     <li>📝 Exams (coming soon)</li>

@@ -26,6 +26,10 @@ export interface AnswerProgress {
     response_time_ms: number
 }
 
+export interface RefreshWords {
+    refresh: boolean
+}
+
 export interface ProgressWordAnswer {
     id: string
     userid: string

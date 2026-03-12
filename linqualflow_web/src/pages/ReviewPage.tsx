@@ -1,49 +1,93 @@
-import {useEffect, useRef, useState} from "react"
-import { useNavigate } from "react-router-dom"
-import WordCard from "../components/WordCard";
-import { getReviewWords, sendReviewAnswer } from "../api/review"
-import type { RecommendWord, AnswerProgress } from "../types/review"
-import { Typography, Box } from "@mui/material"
+import { useEffect, useRef, useState } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
 
+import WordCard from "../components/WordCard"
+import { getReviewWords, sendReviewAnswer } from "../api/review"
+
+import type { RecommendWord, AnswerProgress } from "../types/review"
+
+import { Typography, Box, Button, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material"
 
 interface ReviewResult {
     word: RecommendWord
     correct: boolean
 }
 
-export default function ReviewPage(){
-
+export default function ReviewPage() {
+    const location = useLocation();
     const navigate = useNavigate()
 
-    const [words,setWords] = useState<RecommendWord[]>([])
-    const [index,setIndex] = useState(0)
-    const [flipped,setFlipped] = useState(false)
+    const [words, setWords] = useState<RecommendWord[]>([])
+    const [index, setIndex] = useState(0)
+    const [flipped, setFlipped] = useState(false)
 
     const [results, setResults] = useState<ReviewResult[]>([])
     const [finished, setFinished] = useState(false)
 
+    const [loading, setLoading] = useState(true)
+    const [sending, setSending] = useState(false)
+
     const startTime = useRef<number>(0)
-    const loaded = useRef(false)
 
-    useEffect(()=>{
-        if (loaded.current) return
-        loaded.current = true
+    // загрузка слов
+    useEffect(() => {
 
-        const loadWords = async ()=>{
-            const data = await getReviewWords()
-            setWords(data)
-        }
+        const loadWords = async () => {
+            try {
+                // 1. Пытаемся взять слова из навигации
+                const stateWords = (location.state as { words: RecommendWord[] })?.words;
+
+                if (stateWords && stateWords.length > 0) {
+                    setWords(stateWords);
+                } else {
+                    // 2. Если в state пусто, запрашиваем с сервера (fallback)
+                    const data = await getReviewWords();
+                    setWords(data);
+                }
+            } catch (err) {
+                console.error("Ошибка загрузки слов:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         loadWords()
-    },[])
 
-    if(words.length === 0){
+    }, [location.state]); // Добавляем зависимость от state
 
-        return(
+    // Loading
+    if (loading) {
+
+        return (
+
+            <Box textAlign="center" mt={10}>
+                <Typography variant="h5">
+                    Loading words...
+                </Typography>
+            </Box>
+
+        )
+
+    }
+
+    // Нет слов
+    if (words.length === 0) {
+
+        return (
 
             <Box textAlign="center" mt={10}>
                 <Typography variant="h5">
                     No words to review 🎉
                 </Typography>
+
+                <Button
+                    sx={{ mt: 3 }}
+                    variant="contained"
+                    onClick={() => navigate("/")}
+                >
+                    Back
+                </Button>
+
             </Box>
 
         )
@@ -53,21 +97,27 @@ export default function ReviewPage(){
     const currentWord = words[index]
 
     const handleFlip = () => {
-        setFlipped(true)
-        startTime.current = Date.now()
-    }
 
+        setFlipped(true)
+
+        startTime.current = Date.now()
+
+    }
 
     const handleAnswer = async (correct: boolean) => {
 
-        if (!currentWord) return
+        if (!currentWord || sending) return
+
+        setSending(true)
 
         const responseTime = Date.now() - startTime.current
 
         const answer: AnswerProgress = {
+
             wordid: currentWord.id,
             iscorrect: correct,
             response_time_ms: responseTime
+
         }
 
         try {
@@ -80,89 +130,112 @@ export default function ReviewPage(){
             ])
 
             const nextIndex = index + 1
-            //alert(nextIndex)
+
             if (nextIndex >= words.length) {
+
                 setFinished(true)
+
             } else {
-                //alert("Попал в следующий")
+
                 setIndex(nextIndex)
                 setFlipped(false)
+
             }
 
         } catch (err) {
+
             console.error(err)
+
+        } finally {
+
+            setSending(false)
+
         }
+
     }
 
-
-    if (words.length === 0) {
-        return <div>Loading...</div>
-    }
-
-
+    // Экран результатов
     if (finished) {
+
         return (
-            <div>
 
-                <h1>Review completed</h1>
+            <Box p={4}>
 
-                <table border={1} cellPadding={8}>
-                    <thead>
-                    <tr>
-                        <th>Word</th>
-                        <th>Transcription</th>
-                        <th>Translation</th>
-                        <th>Result</th>
-                    </tr>
-                    </thead>
+                <Typography variant="h4" mb={3}>
+                    Review completed 🎉
+                </Typography>
 
-                    <tbody>
+                <Table>
 
-                    {results.map((r, i) => (
-                        <tr key={i}>
+                    <TableHead>
 
-                            <td>{r.word.texten}</td>
+                        <TableRow>
 
-                            <td>
-                                {r.word.transcription || "-"}
-                            </td>
+                            <TableCell>Word</TableCell>
+                            <TableCell>Transcription</TableCell>
+                            <TableCell>Translation</TableCell>
+                            <TableCell>Result</TableCell>
 
-                            <td>{r.word.textl}</td>
+                        </TableRow>
 
-                            <td>
-                                {r.correct ? "✔ Correct" : "✘ Wrong"}
-                            </td>
+                    </TableHead>
 
-                        </tr>
-                    ))}
+                    <TableBody>
 
-                    </tbody>
-                </table>
+                        {results.map((r, i) => (
 
-                <br/>
+                            <TableRow key={i}>
 
-                <button onClick={() => navigate("/")}>
-                    Back to menu
-                </button>
+                                <TableCell>{r.word.texten}</TableCell>
 
-            </div>
+                                <TableCell>
+                                    {r.word.transcription || "-"}
+                                </TableCell>
+
+                                <TableCell>
+                                    {r.word.textl}
+                                </TableCell>
+
+                                <TableCell>
+                                    {r.correct ? "✔ Correct" : "✘ Wrong"}
+                                </TableCell>
+
+                            </TableRow>
+
+                        ))}
+
+                    </TableBody>
+
+                </Table>
+
+                <Box mt={4}>
+
+                    <Button
+                        variant="contained"
+                        onClick={() => navigate("/")}
+                    >
+                        Back to menu
+                    </Button>
+
+                </Box>
+
+            </Box>
+
         )
+
     }
-
-
-    if (!currentWord) {
-        return <div>No words</div>
-    }
-
 
     return (
-        <div>
 
-            <h1>Review</h1>
+        <Box textAlign="center" mt={6}>
 
-            <p>
+            <Typography variant="h4" mb={2}>
+                Review
+            </Typography>
+
+            <Typography mb={3}>
                 {index + 1} / {words.length}
-            </p>
+            </Typography>
 
             <WordCard
                 key={currentWord.id}
@@ -172,24 +245,32 @@ export default function ReviewPage(){
 
             {flipped && (
 
-                <div style={{ marginTop: 20 }}>
+                <Box mt={3} display="flex" gap={2} justifyContent="center">
 
-                    <button
+                    <Button
+                        variant="outlined"
+                        color="error"
+                        disabled={sending}
                         onClick={() => handleAnswer(false)}
                     >
                         Wrong
-                    </button>
+                    </Button>
 
-                    <button
+                    <Button
+                        variant="contained"
+                        color="success"
+                        disabled={sending}
                         onClick={() => handleAnswer(true)}
                     >
                         Correct
-                    </button>
+                    </Button>
 
-                </div>
+                </Box>
 
             )}
 
-        </div>
+        </Box>
+
     )
+
 }

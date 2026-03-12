@@ -5,6 +5,7 @@ import RegisterPage from "../pages/RegisterPage";
 import SettingsPage from "../pages/SettingsPage";
 import Dashboard from "../pages/Dashboard";
 import ReviewPage from "../pages/ReviewPage";
+import PreReviewPage from "../pages/PreReviewPage";
 
 export default function AppRouter(){
 
@@ -21,6 +22,8 @@ export default function AppRouter(){
                 <Route path="/register" element={<RegisterPage/>} />
 
                 <Route path="/user-settings" element={<SettingsPage/>} />
+
+                <Route path="/prereview" element={<PreReviewPage/>} />
 
                 <Route path="/review" element={<ReviewPage />} />
 
