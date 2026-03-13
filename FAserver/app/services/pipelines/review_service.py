@@ -1,4 +1,4 @@
-from sqlalchemy import func
+from sqlalchemy import func, delete
 from sqlalchemy.orm import Session
 
 from app.crud.progress import get_due_words, get_weak_words, get_new_words
@@ -80,15 +80,29 @@ class ReviewService:
         words = [
             word for word, _ in ranked[:limit]
         ]
-        # создаём новую сессию
-        session = ReviewSession(
-            id=UUIDClass.geterateUUIDWithout_(),
-            userid=user_id,
-            createdat=datetime.utcnow()
-        )
 
-        db.add(session)
-        db.flush()
+        # создаём новую сессию (если сегодня еще не создавали)
+        if session:
+            #TODO может просто добавлять новые к старым, их больше будет. Спросить
+            session.createdat=datetime.utcnow()
+            db.commit()
+            db.refresh(session)
+            #Удалить записи в ReviewSessionWord
+            db.execute(
+                delete(ReviewSessionWord).where(ReviewSessionWord.sessionid == session.id)
+            )
+            # Сбрасываем изменения в БД перед загрузкой новых данных
+            db.commit()
+
+        else:
+            session = ReviewSession(
+                id=UUIDClass.geterateUUIDWithout_(),
+                userid=user_id,
+                createdat=datetime.utcnow()
+            )
+
+            db.add(session)
+            db.flush()
 
         for word in words:
             db.add(

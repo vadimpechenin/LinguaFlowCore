@@ -27,4 +27,4 @@ def test_get_recommend(client, auth_headers):
 
     assert isinstance(data2, list)
     assert len(data2) >= 1
-    assert(data1[0]['texten']!=data2[0]['texten'])
+    assert(data1[0]['texten']==data2[0]['texten'])
