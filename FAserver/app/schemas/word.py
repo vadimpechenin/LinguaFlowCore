@@ -19,6 +19,9 @@ class WordRead(WordCreate):
 
     model_config = ConfigDict(from_attributes=True)
 
+class WordID(BaseModel):
+    id: str
+
 class WordResponse(BaseModel):
     id: str
     texten: str

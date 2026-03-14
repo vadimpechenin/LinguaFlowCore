@@ -176,6 +176,30 @@ def seed_user_progress(
         "features_created": created_features
     }
 
+def create_progress_from_ids(db, data, user, isknown=False):
+    now = datetime.utcnow()
+    try:
+        for word_id in data:
+            progress = UserWordProgress(
+                id=UUIDClass.geterateUUIDWithout_(),
+
+                userid=user.id,
+                wordid=word_id.id,
+
+                lastreviewed=None,
+                nextreviewed=now,
+
+                successrate=0.0,
+                reviewcount=0,
+                isknown=isknown
+            )
+
+            db.add(progress)
+
+        db.commit()
+        return True
+    except:
+        return False
 
 #----------------------
 #Блок методов для ReviewSelector

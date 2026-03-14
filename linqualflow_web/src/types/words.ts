@@ -13,6 +13,11 @@ export interface WordRead extends WordCreate {
     id: string;
 }
 
+// Интерфейс для отправки ID
+export interface WordID{
+    id: string;
+}
+
 // Полный ответ сервера (аналог WordResponse)
 export interface WordResponse {
     id: string;

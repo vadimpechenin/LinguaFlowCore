@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user
 from app.api.deps import get_db
+from app.db.models import UserSettings
 from app.schemas.exam import ExamStart, ExamResponse, ExamResult, ExamSubmit, ExamResponseAllFields
 from app.crud.exam import ExamService
 
@@ -22,9 +23,10 @@ async def get_exam(
     :return:
     """
     service = ExamService()
+    settings = db.query(UserSettings).filter(UserSettings.userid == user.id).first()
     exams = service.get_exams(
         db,
-        user.id,10
+        user.id,settings.dailywordlimit*2
     )
     result = []
     for item in exams:

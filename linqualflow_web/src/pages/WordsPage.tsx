@@ -1,15 +1,18 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { read, utils } from 'xlsx';
 import { useNavigate } from 'react-router-dom';
-import { createWord, createWordsFromTable } from "../api/words";
-import { FileUp, PlusCircle, ArrowLeft, Send, Loader2 } from 'lucide-react';
-import type { WordCreate } from "../types/words"
+import {
+    addWordsToProgress, createWord, createWordsFromTable,
+    getAvailableWords
+} from "../api/words";
+import { FileUp, PlusCircle, ArrowLeft, Send, Loader2, ListPlus } from 'lucide-react';
+import type {WordCreate, WordID, WordResponse} from "../types/words"
 
 export default function WordsPage() {
     const navigate = useNavigate();
     const fileInputRef = React.useRef<HTMLInputElement>(null);
     // Состояние для переключения между меню и формой
-    const [view, setView] = useState<'menu' | 'addForm'>('menu');
+    const [view, setView] = useState<'menu' | 'addForm'| 'selectWords'>('menu');
     const [loading, setLoading] = useState(false);
 
     // Состояния для полей WordCreate
@@ -19,7 +22,109 @@ export default function WordsPage() {
     const [partofspeech, setPartofspeech] = useState("verb");
     const [examplesentence, setExamplesentence] = useState("The pirate slew his enemy.");
     const [difficultylevel, setDifficultylevel] = useState("B2");
+    // -----------------------
+    // SELECT WORDS STATE
+    // -----------------------
 
+    const [availableWords, setAvailableWords] = useState<WordResponse[]>([]);
+    const [selected, setSelected] = useState<Set<string>>(new Set());
+
+    // -----------------------
+    // LOAD AVAILABLE WORDS
+    // -----------------------
+
+    useEffect(() => {
+
+        if (view !== "selectWords") return;
+
+        const loadWords = async () => {
+
+            try {
+
+                setLoading(true);
+
+                const words = await getAvailableWords();
+
+                setAvailableWords(words);
+
+            } catch (err) {
+
+                console.error(err);
+
+                alert("Error loading words");
+
+            } finally {
+
+                setLoading(false);
+
+            }
+
+        };
+
+        loadWords();
+
+    }, [view]);
+    // -----------------------
+    // SELECT WORD TOGGLE
+    // -----------------------
+
+    const toggleWord = (id: string) => {
+
+        const newSet = new Set(selected);
+
+        if (newSet.has(id)) {
+
+            newSet.delete(id);
+
+        } else {
+
+            newSet.add(id);
+
+        }
+
+        setSelected(newSet);
+
+    };
+
+    // -----------------------
+    // ADD SELECTED WORDS
+    // -----------------------
+
+    const addSelectedWords = async () => {
+
+        if (selected.size === 0) return;
+
+        try {
+
+            setLoading(true);
+
+            const ids = Array.from(selected);
+            const wordsToSide: WordID[] = ids.map(id => ({id}));
+            const result = await addWordsToProgress(wordsToSide);
+
+            alert(`${ids.length} words added`);
+
+            setSelected(new Set());
+
+            setView("menu");
+
+        } catch (err) {
+
+            console.error(err);
+
+            alert("Error adding words");
+
+        } finally {
+
+            setLoading(false);
+
+        }
+
+    };
+
+    // -----------------------
+    // ADD WORD
+    // -----------------------
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
@@ -87,97 +192,215 @@ export default function WordsPage() {
         reader.readAsBinaryString(file);
     };
 
+
     return (
-        <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-            <button onClick={() => view === 'menu' ? navigate('/') : setView('menu')} style={backButtonStyle}>
-                <ArrowLeft size={20} /> {view === 'menu' ? "Back to Dashboard" : "Back to Selection"}
+
+        <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+
+            <button
+                onClick={() =>
+                    view === 'menu'
+                        ? navigate('/')
+                        : setView('menu')
+                }
+                style={backButtonStyle}
+            >
+
+                <ArrowLeft size={20} />
+
+                {view === 'menu'
+                    ? "Back to Dashboard"
+                    : "Back to Selection"}
+
             </button>
 
-            <h1>{view === 'menu' ? "Manage Your Words" : "Add New Word"}</h1>
+            <h1>
 
-            {view === 'menu' ? (
+                {view === 'menu'
+                    ? "Manage Your Words"
+                    : view === 'addForm'
+                        ? "Add New Word"
+                        : "Select Words"}
+
+            </h1>
+
+            {/* MENU */}
+
+            {view === 'menu' && (
+
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                    {/* Скрытый инпут для выбора файла */}
+
                     <input
                         type="file"
                         ref={fileInputRef}
                         style={{ display: 'none' }}
-                        accept=".xlsx, .xls"
+                        accept=".xlsx,.xls"
                         onChange={handleFileUpload}
                     />
 
                     <button
                         disabled={loading}
                         onClick={() => fileInputRef.current?.click()}
-                        style={{ ...buttonStyle, width: '250px', padding: '12px 20px', opacity: loading ? 0.6 : 1 }}
+                        style={menuButtonStyle}
                     >
-                        {loading ? <Loader2 className="animate-spin" size={20} /> : <FileUp size={20} />}
-                        <span>{loading ? "Processing..." : "Import from file"}</span>
+
+                        {loading
+                            ? <Loader2 className="animate-spin" size={20}/>
+                            : <FileUp size={20}/>
+                        }
+
+                        Import from file
+
                     </button>
 
                     <button
                         onClick={() => setView('addForm')}
-                        style={{ ...buttonStyle, width: '250px', padding: '12px 20px' }}
+                        style={menuButtonStyle}
                     >
-                        <PlusCircle size={20} />
-                        <span>Add one word</span>
+
+                        <PlusCircle size={20}/>
+
+                        Add one word
+
                     </button>
+
+                    <button
+                        onClick={() => setView('selectWords')}
+                        style={menuButtonStyle}
+                    >
+
+                        <ListPlus size={20}/>
+
+                        Select from database
+
+                    </button>
+
                 </div>
-            ) : (
-                /* ПРЕДСТАВЛЕНИЕ: ФОРМА ДОБАВЛЕНИЯ */
+
+            )}
+
+            {/* ADD FORM */}
+
+            {view === 'addForm' && (
+
                 <form onSubmit={handleSubmit} style={formStyle}>
+
                     <input
-                        placeholder="English word *"
+                        placeholder="English word"
                         value={texten}
                         onChange={e => setTexten(e.target.value)}
                         required
                         style={inputStyle}
                     />
+
                     <input
                         placeholder="Transcription"
                         value={transcription}
                         onChange={e => setTranscription(e.target.value)}
                         style={inputStyle}
                     />
+
                     <input
                         placeholder="Translation"
                         value={textl}
                         onChange={e => setTextl(e.target.value)}
                         style={inputStyle}
                     />
-                    <input
-                        placeholder="Part of speech (noun, verb...)"
-                        value={partofspeech}
-                        onChange={e => setPartofspeech(e.target.value)}
-                        style={inputStyle}
-                    />
+
                     <textarea
                         placeholder="Example sentence"
                         value={examplesentence}
                         onChange={e => setExamplesentence(e.target.value)}
-                        style={{ ...inputStyle, minHeight: '80px' }}
-                    />
-                    <select
-                        value={difficultylevel}
-                        onChange={e => setDifficultylevel(e.target.value)}
                         style={inputStyle}
-                    >
-                        <option value="A1">Beginner</option>
-                        <option value="A2">Elementary</option>
-                        <option value="B1">Intermediate</option>
-                        <option value="B2">Upper-Intermediate</option>
-                        <option value="C1">Advanced</option>
-                        <option value="C2">Proficiency</option>
-                    </select>
+                    />
 
                     <button type="submit" style={submitButtonStyle}>
-                        <Send size={18} /> Save Word
+
+                        <Send size={18}/>
+
+                        Save Word
+
                     </button>
+
                 </form>
+
             )}
+
+            {/* SELECT WORDS */}
+
+            {view === 'selectWords' && (
+
+                <div>
+
+                    {loading ? (
+
+                        <p>Loading words...</p>
+
+                    ) : (
+
+                        <>
+
+                            <p>
+
+                                Selected: {selected.size}
+
+                            </p>
+
+                            <div style={{maxHeight: 400, overflow: "auto"}}>
+
+                                {availableWords.map(word => (
+
+                                    <label
+                                        key={word.id}
+                                        style={{
+                                            display: "flex",
+                                            gap: 10,
+                                            padding: 6
+                                        }}
+                                    >
+
+                                        <input
+                                            type="checkbox"
+                                            checked={selected.has(word.id)}
+                                            onChange={() => toggleWord(word.id)}
+                                        />
+
+                                        <b>{word.texten}</b>
+
+                                        {word.transcription}
+
+                                        — {word.textl}
+
+                                    </label>
+
+                                ))}
+
+                            </div>
+
+                            <button
+                                onClick={addSelectedWords}
+                                disabled={selected.size === 0}
+                                style={submitButtonStyle}
+                            >
+
+                                Add {selected.size} words
+
+                            </button>
+
+                        </>
+
+                    )}
+
+                </div>
+
+            )}
+
         </div>
+
     );
+
 }
+
 
 // Стили
 const buttonStyle: React.CSSProperties = {
@@ -192,6 +415,20 @@ const buttonStyle: React.CSSProperties = {
     fontWeight: 500,
     color: '#333'
 };
+
+const menuButtonStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    borderRadius: '20px',
+    border: '1px solid #ddd',
+    backgroundColor: '#fff',
+    cursor: 'pointer',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    fontWeight: 500,
+    color: '#333'
+};
+
 
 const inputStyle: React.CSSProperties = {
     padding: '12px',

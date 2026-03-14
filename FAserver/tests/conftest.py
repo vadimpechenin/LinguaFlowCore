@@ -63,6 +63,7 @@ def auth_headers(client):
     res = client.post(
         "/auth/login",
         json={"username": "test_user_", "password": "password123"},
+        #json={"username": "administrator", "password": "administrator"},
     )
 
     token = res.json()["access_token"]

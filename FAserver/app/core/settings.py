@@ -14,7 +14,9 @@ DIF_NAME = "difficulty_predictor.pkl"
 filename = "Books_Vocabulary_B1-C1.xlsx"
 path = CommonUtils.get_global_project_root()
 EXCEL_WORDS_PATH = Path(path + "\\documents\\" + filename)
+#EXCEL_WORDS_PATH = Path("D:\\" + filename)
 SHEET_NAME = "The_Secret_Garden"
+#SHEET_NAME = "Treasure_Island"
 REQUIRED_COLUMNS = {
     "Word / Expression",
     "Transcription (BrE)",

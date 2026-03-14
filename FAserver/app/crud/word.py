@@ -1,3 +1,5 @@
+import random
+
 from sqlalchemy.orm import Session
 
 from app.db.core.support.UUIDClass import UUIDClass
@@ -17,6 +19,20 @@ def create_word_by_data(db: Session, data) -> Word:
 def list_words(db: Session, limit: int = 300):
     return db.query(Word).limit(limit).all()
 
+def get_user_misssing_words(db: Session,userid, limit: int = 100):
+    subquery = (
+        db.query(UserWordProgress.wordid)
+        .filter(UserWordProgress.userid == userid)
+    )
+
+    words = (
+        db.query(Word)
+        .filter(~Word.id.in_(subquery))
+        .all()
+    )
+    selected = random.sample(words, min(limit, len(words)))
+
+    return selected
 
 def load_user_words(db: Session, user_id: str):
     #TODO надо заполнить сначала UserWordProgress тестово
