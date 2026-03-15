@@ -58,9 +58,16 @@ export default function Dashboard() {
                             </button>
                         </li>
                     )}
+                    <li style={{ marginBottom: '15px' }}>
+                        <button
+                            onClick={() => navigate('/exams')}
+                            style={{ ...buttonStyle, width: '200px', justifyContent: 'center' }}
+                        >
+                            📝 Exams
+                        </button>
+                    </li>
                     <li>📖 Text analysis (coming soon)</li>
                     <li>📊 Statistics (coming soon)</li>
-                    <li>📝 Exams (coming soon)</li>
                 </ul>
             </div>
         </div>

@@ -7,6 +7,8 @@ import Dashboard from "../pages/Dashboard";
 import ReviewPage from "../pages/ReviewPage";
 import PreReviewPage from "../pages/PreReviewPage";
 import WordsPage from "../pages/WordsPage";
+import ExamsPage from "../pages/ExamsPage"
+import ExamRunner from "../pages/ExamRunner"
 
 export default function AppRouter(){
 
@@ -29,6 +31,11 @@ export default function AppRouter(){
                 <Route path="/prereview" element={<PreReviewPage/>} />
 
                 <Route path="/review" element={<ReviewPage />} />
+
+                <Route path="/exams" element={<ExamsPage />} />
+
+                <Route path="/exam-runner" element={<ExamRunner />} />
+
 
             </Routes>
 
