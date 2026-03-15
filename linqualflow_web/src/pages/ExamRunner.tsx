@@ -5,7 +5,7 @@ import { submitExam } from "../api/exams"
 
 import type {
     ExamResponse,
-    ExamSubmitAnswer, ExamResult
+    ExamSubmitAnswer, ExamResult, ExamQuestion
 } from "../types/exams"
 
 // Хелпер для перемешивания массива
@@ -23,6 +23,8 @@ export default function ExamRunner() {
     const [finished, setFinished] = useState(false);
     const [result, setResult] = useState<ExamResult | null>(null);
 
+    const [showAnswer, setShowAnswer] = useState(false);
+
     if (!exam || !exam.questions) return <div>No exam data</div>;
 
     const question: ExamQuestion = exam.questions[index];
@@ -34,9 +36,14 @@ export default function ExamRunner() {
 
     const handleAnswer = async (userAnswer: string) => {
         // Логика проверки: предполагаем, что в исходном массиве правильный ответ всегда под индексом 0
-        const isCorrect = question.type === "multiple_choice"
+        const isCorrect =
+            question.type === "multiple_choice"
             ? userAnswer === question.options?.[0]
-            : true;
+            : (question.type === "flashcard_forward" || question.type === "flashcard_reverse")
+                ? userAnswer === "true"
+                : question.type === "scramble"
+                    ? userAnswer.trim().toLowerCase() === question.options?.[0].toLowerCase()
+                    : true;
 
         const newAnswer: ExamSubmitAnswer = {
             word_id: question.word_id,
@@ -46,6 +53,7 @@ export default function ExamRunner() {
         const updatedAnswers = [...answers, newAnswer];
         setAnswers(updatedAnswers);
         setInputValue("");
+        setShowAnswer(false);
 
         if (index < exam.questions.length - 1) {
             setIndex(prev => prev + 1);
@@ -65,6 +73,13 @@ export default function ExamRunner() {
     };
 
     function renderQuestionContent() {
+        const questionText = (
+            <div style={{ margin: '20px 0', fontSize: '1.4rem', fontWeight: 'bold' }}>
+                {question.question}
+            </div>
+        );
+
+        const content = (() => {
         switch (question.type) {
             case "multiple_choice":
                 return (
@@ -99,23 +114,72 @@ export default function ExamRunner() {
             case "flashcard_reverse":
                 return (
                     <div style={styles.flashcardContainer}>
-                        <button style={styles.primaryButton} onClick={() => handleAnswer("shown")}>
-                            Show answer
-                        </button>
+                        {!showAnswer ? (
+                            <button
+                                style={styles.primaryButton}
+                                onClick={() => setShowAnswer(true)}
+                            >
+                                Show answer
+                            </button>
+                        ) : (
+                            <>
+                                <div style={styles.answerText}>{question.options?.[0]}</div>
+                                <div style={styles.buttonGroup}>
+                                    <button
+                                        style={styles.correctButton}
+                                        onClick={() => handleAnswer("true")}
+                                    >
+                                        Correct
+                                    </button>
+                                    <button
+                                        style={styles.wrongButton}
+                                        onClick={() => handleAnswer("false")}
+                                    >
+                                        No correct
+                                    </button>
+                                </div>
+                            </>
+                        )}
                     </div>
                 );
             default:
                 return null;
         }
+    })();
+
+        return (
+            <>
+                {questionText}
+                {content}
+            </>
+        );
     }
 
     if (finished && result) {
         return (
             <div style={styles.container}>
                 <h2>Exam Results</h2>
-                <p>Score: {result.score}%</p>
-                <p>Level: {result.estimatedlevel}</p>
-                <button onClick={() => navigate("/")}>Go Home</button>
+                <div style={{ fontSize: '1.2rem', marginBottom: '20px' }}>
+                    <strong>Score: {result.score}%</strong> | Level: {result.estimatedlevel}
+                </div>
+
+                <div style={styles.resultsList}>
+                    <h3>Детализация по вопросам:</h3>
+                    {exam.questions.map((q, i) => {
+                        const answer = answers.find(a => a.word_id === q.word_id);
+                        return (
+                            <div key={i} style={{
+                                padding: '10px',
+                                borderBottom: '1px solid #eee',
+                                color: answer?.is_correct ? '#28a745' : '#dc3545'
+                            }}>
+                                <strong>{q.question}</strong> — {q.options?.[0]}
+                                {answer?.is_correct ? ' (✅)' : ' (❌)'}
+                            </div>
+                        );
+                    })}
+                </div>
+                <button style={{ marginTop: '20px' }} onClick={() => navigate("/")}>Go Home</button>
             </div>
         );
     }
@@ -177,7 +241,24 @@ const styles: Record<string, React.CSSProperties> = {
         fontSize:16,
         width:200
     },
-
+    correctButton: {
+        padding: '10px 20px',
+        backgroundColor: '#28a745',
+        color: 'white',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        fontWeight: 'bold' as const
+    },
+    wrongButton: {
+        padding: '10px 20px',
+        backgroundColor: '#dc3545',
+        color: 'white',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        fontWeight: 'bold' as const
+    },
     primaryButton:{
         padding:"12px 20px",
         borderRadius:8,
