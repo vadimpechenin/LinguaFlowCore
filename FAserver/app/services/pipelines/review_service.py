@@ -23,7 +23,7 @@ class ReviewService:
         refresh: bool=False
     ):
         today = date.today()
-
+        was_refreshed = False
         session = (
             db.query(ReviewSession)
             .filter(
@@ -47,10 +47,10 @@ class ReviewService:
                 .all()
             )
 
-            return words
+            return words, was_refreshed
 
         # иначе создаём новую выборку
-
+        was_refreshed = True
         progresses = (
             db.query(UserWordProgress)
             .filter(
@@ -114,4 +114,4 @@ class ReviewService:
 
         db.commit()
 
-        return words
+        return words, was_refreshed

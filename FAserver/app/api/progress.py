@@ -10,7 +10,8 @@ from app.crud.setting import get_settings
 from app.schemas.progress import (
     ProgressSummary,
     ProgressWordResponse,
-    ProgressWords, UserProgressFeaturesWord, RecommendWord, ProgressWordAnswer, AnswerProgress, RefreshWords
+    ProgressWords, UserProgressFeaturesWord, ProgressWordAnswer, AnswerProgress, RefreshWords,
+    ReviewWordsResponse
 )
 from app.services.ml_client import MLClient, get_ml_client
 from app.services.pipelines.progress_service import ProgressService
@@ -37,7 +38,7 @@ def review(
     return result
 
 #1 Получить слова для повторения
-@router.post("/words", response_model=list[RecommendWord])
+@router.post("/words", response_model=ReviewWordsResponse)
 async def get_review_words(
     refreshWord: RefreshWords,
     db: Session = Depends(get_db),
@@ -51,13 +52,16 @@ async def get_review_words(
         db,
         user.id
     )
-    words = service.get_words_for_review(
+    words, was_refreshed = service.get_words_for_review(
         db,
         user.id,
         user_settings.dailywordlimit,
         refreshWord.refresh
     )
-    return words
+    return {
+        "words": words,
+        "was_refreshed": was_refreshed
+    }
     #TODO код, который пока использовать не будем
     """
     user_settings = get_settings(

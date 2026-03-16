@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
-
+from typing import List
 
 class ProgressWords(BaseModel):
     word_ids: list[str]
@@ -32,6 +32,10 @@ class RecommendWord(BaseModel):
     difficultylevel: str
     audiourl: str | None
     createdat: datetime
+
+class ReviewWordsResponse(BaseModel):
+    words: List[RecommendWord]
+    was_refreshed: bool  # Флаг: был ли создан новый набор
 
 class RefreshWords(BaseModel):
     refresh:bool

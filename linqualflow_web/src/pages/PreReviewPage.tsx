@@ -12,9 +12,12 @@ export default function PreReviewPage() {
         }
         try {
             // Выполняем запрос к API
-            const loadWords = await fetchReviewWords(request);
+            const { words, was_refreshed } = await fetchReviewWords(request);
+            // Если refresh=true (новый набор) -> показываем список (showList: true)
+            // Если refresh=false (продолжить) -> сразу к карточкам (showList: false)
             // После успешного ответа переходим на страницу обучения
-            navigate('/review', { state: { words: loadWords } });
+            navigate('/review', { state: { words: words,
+                    showList: was_refreshed } });
         } catch (error) {
             console.error("Ошибка при подготовке слов:", error);
             alert("Не удалось загрузить слова");
