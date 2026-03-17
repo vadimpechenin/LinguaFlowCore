@@ -3,6 +3,7 @@
 """
 from sqlalchemy import create_engine
 from sqlalchemy.orm.session import sessionmaker
+from sqlalchemy import text
 
 from core.support.supportFunctions import resultproxy_to_dict
 
@@ -30,6 +31,17 @@ class SQLDataBase():
     def create_session(self):
         #Создание сессии, через которую мапяться объекты
         self.session = sessionmaker(bind=self.engine)()
+
+    def clear_all_tables(self):
+        # Отключаем проверку внешних ключей (актуально для PostgreSQL/MySQL)
+        self.session.execute(text("SET session_replication_role = 'replica';"))  # Для Postgres
+        # Или db.execute(text("SET FOREIGN_KEY_CHECKS = 0;")) # Для MySQL
+
+        for table in reversed(Base.metadata.sorted_tables):
+            self.session.execute(table.delete())
+
+        self.session.execute(text("SET session_replication_role = 'origin';"))  # Включаем обратно
+        self.session.commit()
 
     def databaseAddCommit(self,type_object):
         self.session.add(type_object)

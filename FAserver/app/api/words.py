@@ -85,10 +85,14 @@ async def create_word(
         new_texten=[]
         for word in data_filtered:
             new_texten.append(word.texten)
-        #Выполнить сравнение с помощью кодировки
-        result_unknown_words = await ml_client.get_new_words(
-            base_texten, new_texten
-        )
+        print(len(new_texten))
+        # TODO Выполнить сравнение с помощью кодировки - Ошибка в  File "D:\JAVA\Programms\LinguaFlowCore\FAserver\app\services\models\bert_encod.py", line 37, in encode
+        #     inputs = self.tokenizer(
+        result_unknown_words = new_texten
+        if (1==0):
+            result_unknown_words = await ml_client.get_new_words(
+                base_texten, new_texten
+            )
         #Список сохранить и добавить потом в progress пользователю
         data_filtered_ = [x for x in data_filtered if x.texten in result_unknown_words]
         result_words = []

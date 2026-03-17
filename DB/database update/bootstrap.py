@@ -23,9 +23,12 @@ class Bootstrap():
     def run():
         # Создание БД
         # config.SQLDataBaseObj.db_create()
+
         # Работа с сессией
         config.SQLDataBaseObj.create_session()
         # Уничтожение всего что было в БД (не обязательно)
+        # Очистка всех таблиц
+        config.SQLDataBaseObj.clear_all_tables()
         #config.SQLDataBaseObj.recreate_database()
 
         #res = config.SQLDataBaseObj.select_all_params_in_table(config.AllParametersObj.namesOfTables.UsersName)
