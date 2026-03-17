@@ -50,11 +50,13 @@ async def start_exam(
     :return:
     """
     service = ExamService()
+    settings = db.query(UserSettings).filter(UserSettings.userid == user.id).first()
+    size = settings.dailywordlimit * 2
     return service.start_exam(
         db,
         user.id,
         data.difficultylevel,
-        data.size
+        size#data.size
     )
 
 
