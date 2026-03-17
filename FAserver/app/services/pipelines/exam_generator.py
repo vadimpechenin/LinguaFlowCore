@@ -55,7 +55,7 @@ class ExamGenerator:
                    "word_id": w.id,
                    "type": task_type,
                    "question": f"Unscramble: {scrambled}",
-                               "options": None
+                               "options": [w.texten]
                })
 
        return questions

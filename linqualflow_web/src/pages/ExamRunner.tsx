@@ -29,6 +29,47 @@ export default function ExamRunner() {
 
     const question: ExamQuestion = exam.questions[index];
 
+    const [usedIndices, setUsedIndices] = useState<number[]>([]);
+
+    const cleanWord = useMemo(() => {
+        if (question.type === "scramble") {
+            // Убираем "Unscramble:", двоеточия и пробелы в начале
+            return question.question.replace(/^unscramble:\s*/i, "").trim();
+        }
+        return "";
+    }, [index, question.question, question.type]);
+
+    // Перемешиваем буквы только при смене вопроса
+    const scrambledLetters = useMemo(() => {
+        if (question.type === "scramble" && cleanWord) {
+            setUsedIndices([]); // Сброс при смене вопроса
+            return shuffleArray(cleanWord.split(""));
+        }
+        return [];
+    }, [cleanWord]);
+
+    const handleLetterClick = (letter: string, charIndex: number) => {
+        if (usedIndices.includes(charIndex)) return; // Нельзя нажать дважды
+        setInputValue(prev => prev + letter);
+        setUsedIndices(prev => [...prev, charIndex]);
+    };
+
+    const resetScramble = () => {
+        setInputValue("");
+        setUsedIndices([]);
+    };
+    const handleBackspace = () => {
+        if (usedIndices.length === 0) return;
+
+        // 1. Убираем последний добавленный индекс из списка использованных
+        const newUsedIndices = [...usedIndices];
+        newUsedIndices.pop(); // удаляем последний элемент
+        setUsedIndices(newUsedIndices);
+
+        // 2. Убираем последний символ из инпута
+        setInputValue(prev => prev.slice(0, -1));
+    };
+
     // Перемешиваем опции только когда меняется индекс вопроса
     const shuffledOptions = useMemo(() => {
         return question.options ? shuffleArray(question.options) : [];
@@ -36,6 +77,10 @@ export default function ExamRunner() {
 
     const handleAnswer = async (userAnswer: string) => {
         // Логика проверки: предполагаем, что в исходном массиве правильный ответ всегда под индексом 0
+        //if (question.type === "scramble"){
+        //    console.log(userAnswer.trim().toLowerCase())
+        //    console.log(question.options?.[0].toLowerCase())
+        //}
         const isCorrect =
             question.type === "multiple_choice"
             ? userAnswer === question.options?.[0]
@@ -75,7 +120,9 @@ export default function ExamRunner() {
     function renderQuestionContent() {
         const questionText = (
             <div style={{ margin: '20px 0', fontSize: '1.4rem', fontWeight: 'bold' }}>
-                {question.question}
+                {question.type === "scramble"
+                    ? "Unscramble:"
+                    : question.question}
             </div>
         );
 
@@ -97,17 +144,59 @@ export default function ExamRunner() {
                 );
             case "scramble":
                 return (
-                    <div style={styles.scrambleContainer}>
-                        <input
-                            style={styles.input}
-                            value={inputValue}
-                            placeholder="Type answer..."
-                            onChange={e => setInputValue(e.target.value)}
-                            onKeyDown={e => e.key === "Enter" && handleAnswer(inputValue)}
-                        />
-                        <button style={styles.primaryButton} onClick={() => handleAnswer(inputValue)}>
-                            Submit
-                        </button>
+                    <div style={styles.scrambleWrapper}>
+                        <div style={styles.lettersGrid}>
+                            {scrambledLetters.map((char, charIndex) => {
+                                const isUsed = usedIndices.includes(charIndex);
+                                return (
+                                    <button
+                                        key={charIndex}
+                                        disabled={isUsed}
+                                        style={{
+                                            ...styles.letterTile,
+                                            opacity: isUsed ? 0.3 : 1,
+                                            cursor: isUsed ? "default" : "pointer",
+                                            transform: isUsed ? "scale(0.9)" : "scale(1)"
+                                        }}
+                                        onClick={() => handleLetterClick(char, charIndex)}
+                                    >
+                                        {char}
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {/* Поле ввода (сделаем только для чтения или оставим ввод) */}
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginTop: '20px' }}>
+                            <input
+                                style={{ ...styles.input, flex: 1 }}
+                                value={inputValue}
+                                placeholder="Собираем слово..."
+                                readOnly
+                            />
+                            {/* Кнопка стирания последней буквы */}
+                            <button
+                                onClick={handleBackspace}
+                                disabled={inputValue.length === 0}
+                                style={styles.backspaceButton}
+                            >
+                                ⌫
+                            </button>
+                        </div>
+                        <div style={{ marginTop: '20px', display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                                <button
+                                    style={styles.secondaryButton}
+                                    onClick={resetScramble}
+                                >
+                                    ✕
+                                </button>
+                            <button
+                                style={styles.primaryButton}
+                                onClick={() => handleAnswer(inputValue)}
+                            >
+                                Submit
+                            </button>
+                        </div>
                     </div>
                 );
             case "flashcard_forward":
@@ -266,7 +355,25 @@ const styles: Record<string, React.CSSProperties> = {
         background:"#007bff",
         color:"#fff",
         cursor:"pointer"
-    }
+    },
+    backspaceButton: {
+        padding: '10px 15px',
+        fontSize: '1.2rem',
+        borderRadius: '8px',
+        border: '1px solid #ccc',
+        backgroundColor: '#f8f9fa',
+        cursor: 'pointer',
+        color: '#333',
+        display: 'flex',
+        alignItems: 'center'
+    },
+    secondaryButton: {
+        padding: '10px 20px',
+        borderRadius: '8px',
+        border: '1px solid #ccc',
+        backgroundColor: '#fff',
+        cursor: 'pointer'
+    },
 
 }
 
