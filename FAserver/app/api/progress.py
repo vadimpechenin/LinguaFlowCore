@@ -17,6 +17,7 @@ from app.services.ml_client import MLClient, get_ml_client
 from app.services.pipelines.progress_service import ProgressService
 from app.services.pipelines.review_service import ReviewService
 from app.services.pipelines.review_updater import ReviewUpdater
+import random
 
 router = APIRouter(prefix="/review", tags=["review"])
 
@@ -44,9 +45,9 @@ async def get_review_words(
     db: Session = Depends(get_db),
     user=Depends(get_current_user),
 ):
-    print("Статус обновления слов: " + str(refreshWord.refresh))
-    if (user!=None):
-        print(user.id)
+    #print("Статус обновления слов: " + str(refreshWord.refresh))
+    #if (user!=None):
+    #    print(user.id)
     service = ReviewService()
     user_settings = get_settings(
         db,
@@ -58,6 +59,7 @@ async def get_review_words(
         user_settings.dailywordlimit,
         refreshWord.refresh
     )
+    random.shuffle(words)
     return {
         "words": words,
         "was_refreshed": was_refreshed
