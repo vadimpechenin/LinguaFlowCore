@@ -102,7 +102,10 @@ async def answer(
 
 #4 Общий прогресс
 @router.get("/progress/summary", response_model=ProgressSummary)
-def progress_summary(user=Depends(get_current_user), db: Session = Depends(get_db)):
+async def progress_summary(
+        user=Depends(get_current_user),
+        db: Session = Depends(get_db)
+):
     service = ProgressService()
     return service.get_summary(db, user.id)
 
@@ -116,7 +119,7 @@ return ProgressSummary(
 """
 #5 Прогресс по слову
 @router.get("/progress/word/{word_id}", response_model=ProgressWordResponse)
-def word_progress(
+async def word_progress(
     word_id: str,
     user=Depends(get_current_user),
     db: Session = Depends(get_db)

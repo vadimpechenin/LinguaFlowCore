@@ -253,7 +253,7 @@ export default function ExamRunner() {
                 </div>
 
                 <div style={styles.resultsList}>
-                    <h3>Детализация по вопросам:</h3>
+                    <h3>Exam results:</h3>
                     {exam.questions.map((q, i) => {
                         const answer = answers.find(a => a.word_id === q.word_id);
                         return (
@@ -268,7 +268,7 @@ export default function ExamRunner() {
                         );
                     })}
                 </div>
-                <button style={{ marginTop: '20px' }} onClick={() => navigate("/")}>Go Home</button>
+                <button style={{ marginTop: '20px' }} onClick={() => navigate("/")}>Back to menu</button>
             </div>
         );
     }

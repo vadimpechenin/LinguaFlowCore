@@ -9,6 +9,7 @@ import PreReviewPage from "../pages/PreReviewPage";
 import WordsPage from "../pages/WordsPage";
 import ExamsPage from "../pages/ExamsPage"
 import ExamRunner from "../pages/ExamRunner"
+import StatisticsPage from "../pages/StatisticsPage"
 
 export default function AppRouter(){
 
@@ -36,6 +37,7 @@ export default function AppRouter(){
 
                 <Route path="/exam-runner" element={<ExamRunner />} />
 
+                <Route path="/statistics" element={<StatisticsPage />} />
 
             </Routes>
 

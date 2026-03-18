@@ -13,7 +13,7 @@ export default function SettingsPage() {
     useEffect(() => {
         getSettings()
             .then(data => setSettings(data))
-            .catch(err => console.error("Ошибка загрузки:", err))
+            .catch(err => console.error("Error load:", err))
             .finally(() => setLoading(false));
     }, []);
 

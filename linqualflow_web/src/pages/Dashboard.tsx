@@ -67,7 +67,14 @@ export default function Dashboard() {
                         </button>
                     </li>
                     <li>📖 Text analysis (coming soon)</li>
-                    <li>📊 Statistics (coming soon)</li>
+                    <li style={{ marginBottom: '15px' }}>
+                        <button
+                            onClick={() => navigate('/statistics')}
+                            style={{ ...buttonStyle, width: '200px', justifyContent: 'center' }}
+                        >
+                            📊 Statistics
+                        </button>
+                    </li>
                 </ul>
             </div>
         </div>

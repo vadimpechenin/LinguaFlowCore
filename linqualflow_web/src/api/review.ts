@@ -1,5 +1,6 @@
 import API from "./api"
 import type { RecommendWord, AnswerProgress, ProgressWordAnswer, RefreshWords } from "../types/review"
+import type {ProgressSummary} from "../types/statistics";
 
 export const getReviewWords = async (): Promise<RecommendWord[]> => {
 
@@ -25,3 +26,10 @@ export const fetchReviewWords = async (refresh: RefreshWords) => {
     const res = await API.post("/review/words",refresh);
     return res.data;
 };
+
+export const getSummaryStatistics = async (
+): Promise<ProgressSummary> => {
+
+    const res = await API.get("/review/progress/summary")
+    return res.data
+}
