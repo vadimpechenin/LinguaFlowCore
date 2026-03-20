@@ -39,42 +39,42 @@ export default function Dashboard() {
             <div>
                 <h1>LinqualFlow</h1>
                 <ul style={{ marginTop: '40px' }}>
-                    <li style={{ marginBottom: '15px' }}>
+
                         <button
                             onClick={() => navigate('/prereview')}
-                            style={{ ...buttonStyle, width: '200px', justifyContent: 'center' }}
+                            style={{ ...buttonStyle, width: '200px', justifyContent: 'center',marginBottom: '15px' }}
                         >
                             📚 Review words
                         </button>
-                    </li>
+
                     {/* Кнопка отобразится только если пользователь авторизован */}
                     {isLoggedIn && (
-                        <li style={{ marginBottom: '15px' }}>
                             <button
                                 onClick={() => navigate('/words')}
-                                style={{ ...buttonStyle, width: '220px', justifyContent: 'center' }}
+                                style={{ ...buttonStyle, width: '220px', justifyContent: 'center', marginBottom: '15px' }}
                             >
                                 📥 Load new words
                             </button>
-                        </li>
                     )}
-                    <li style={{ marginBottom: '15px' }}>
                         <button
                             onClick={() => navigate('/exams')}
-                            style={{ ...buttonStyle, width: '200px', justifyContent: 'center' }}
+                            style={{ ...buttonStyle, width: '200px', justifyContent: 'center', marginBottom: '15px' }}
                         >
                             📝 Exams
                         </button>
-                    </li>
-                    <li>📖 Text analysis (coming soon)</li>
-                    <li style={{ marginBottom: '15px' }}>
+                    <button
+                        onClick={() => navigate('/texts')}
+                        style={{ ...buttonStyle, width: '200px', justifyContent: 'center', marginBottom: '15px' }}
+                    >
+                        📖 Text analysis
+                    </button>
+
                         <button
                             onClick={() => navigate('/statistics')}
-                            style={{ ...buttonStyle, width: '200px', justifyContent: 'center' }}
+                            style={{ ...buttonStyle, width: '200px', justifyContent: 'center', marginBottom: '15px' }}
                         >
                             📊 Statistics
                         </button>
-                    </li>
                 </ul>
             </div>
         </div>

@@ -7,7 +7,7 @@ from app.api.deps import get_db
 from app.core.settings import ML_SERVICE_URL
 from app.crud.word import load_user_words
 from app.db.models.text import Text
-from app.schemas.text import TextResponse, TextRequest, TextAnalyzeResponse  # , TextAnalyzeResponse
+from app.schemas.text import TextResponse, TextRequest, TextAnalyzeResponse, TextAnalyzeRequest  # , TextAnalyzeResponse
 from app.crud.text import create_text,get_text_by_title
 from app.services.ml_client import get_ml_client, MLClient
 
@@ -29,17 +29,9 @@ async def submit_text(
     return {"id": text.id,"title": text.title, "content": text.content}#, "questions": questions # ML
 
 
-@router.get("/{text_title}", response_model=TextResponse)
-async def load_text(
-    text_title: str,
-    user=Depends(get_current_user),
-    db: Session = Depends(get_db),
-):
-    return get_text_by_title(db, text_title, user.id)
-
-@router.post("/{text_c}/analyze", response_model=TextAnalyzeResponse)#
+@router.post("/analyze", response_model=TextAnalyzeResponse)#
 async def analyze(
-    text_title: str,
+    data: TextAnalyzeRequest,
     user=Depends(get_current_user),
     db: Session = Depends(get_db),
     ml_client: MLClient = Depends(get_ml_client)
@@ -57,7 +49,8 @@ async def analyze(
     :param db:
     :return:
     """
-    text = get_text_by_title(db, text_title, user.id)
+    print(data.title)
+    text = get_text_by_title(db, data.title, user.id)
     user_words = load_user_words(db, user.id)
     if not text:
         raise HTTPException(
@@ -70,12 +63,23 @@ async def analyze(
     )
 
     return TextAnalyzeResponse(
-        title=text_title,
+        title=data.title,
         level=result["level"],
         unknown_words=result["unknown_words"],
         coveragepercent=result["coverage_percent"],
         recommended_words=result["recommended_words_list"]
     )
+
+
+@router.get("/{text_title}", response_model=TextResponse)
+async def load_text(
+    text_title: str,
+    user=Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    return get_text_by_title(db, text_title, user.id)
+
+
 
 
 

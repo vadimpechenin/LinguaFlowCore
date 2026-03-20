@@ -11,6 +11,8 @@ class TextResponse(BaseModel):
     title: str
     content: str
 
+class TextAnalyzeRequest(BaseModel):
+    title: str
 
 class TextAnalyzeResponse(BaseModel):
     title: str
