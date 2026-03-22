@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom"
 import React, { useState, useMemo } from "react"
-
+import {styles} from "../components/Styles"
 import { submitExam } from "../api/exams"
 
 import type {
@@ -285,95 +285,3 @@ export default function ExamRunner() {
         </div>
     );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-
-    container:{
-        maxWidth:600,
-        margin:"0 auto",
-        padding:20,
-        textAlign:"center"
-    },
-
-    question:{
-        fontSize:24,
-        marginBottom:30
-    },
-
-    optionsContainer:{
-        display:"flex",
-        flexDirection:"column",
-        gap:12
-    },
-
-    optionButton:{
-        padding:"12px 20px",
-        fontSize:16,
-        borderRadius:8,
-        border:"1px solid #ccc",
-        cursor:"pointer"
-    },
-
-    flashcardContainer:{
-        marginTop:20
-    },
-
-    scrambleContainer:{
-        display:"flex",
-        flexDirection:"column",
-        gap:12,
-        alignItems:"center"
-    },
-
-    input:{
-        padding:10,
-        fontSize:16,
-        width:200
-    },
-    correctButton: {
-        padding: '10px 20px',
-        backgroundColor: '#28a745',
-        color: 'white',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-        fontWeight: 'bold' as const
-    },
-    wrongButton: {
-        padding: '10px 20px',
-        backgroundColor: '#dc3545',
-        color: 'white',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-        fontWeight: 'bold' as const
-    },
-    primaryButton:{
-        padding:"12px 20px",
-        borderRadius:8,
-        border:"none",
-        background:"#007bff",
-        color:"#fff",
-        cursor:"pointer"
-    },
-    backspaceButton: {
-        padding: '10px 15px',
-        fontSize: '1.2rem',
-        borderRadius: '8px',
-        border: '1px solid #ccc',
-        backgroundColor: '#f8f9fa',
-        cursor: 'pointer',
-        color: '#333',
-        display: 'flex',
-        alignItems: 'center'
-    },
-    secondaryButton: {
-        padding: '10px 20px',
-        borderRadius: '8px',
-        border: '1px solid #ccc',
-        backgroundColor: '#fff',
-        cursor: 'pointer'
-    },
-
-}
-

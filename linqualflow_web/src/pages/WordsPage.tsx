@@ -7,6 +7,7 @@ import {
 } from "../api/words";
 import { FileUp, PlusCircle, ArrowLeft, Send, Loader2, ListPlus } from 'lucide-react';
 import type {WordCreate, WordID, WordResponse} from "../types/words"
+import {backButtonStyle, inputStyle, menuButtonStyle, submitButtonStyle, formStyle} from "../components/Styles";
 
 export default function WordsPage() {
     const navigate = useNavigate();
@@ -400,69 +401,3 @@ export default function WordsPage() {
     );
 
 }
-
-
-// Стили
-const buttonStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    borderRadius: '20px',
-    border: '1px solid #ddd',
-    backgroundColor: '#fff',
-    cursor: 'pointer',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    fontWeight: 500,
-    color: '#333'
-};
-
-const menuButtonStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    borderRadius: '20px',
-    border: '1px solid #ddd',
-    backgroundColor: '#fff',
-    cursor: 'pointer',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    fontWeight: 500,
-    color: '#333'
-};
-
-
-const inputStyle: React.CSSProperties = {
-    padding: '12px',
-    borderRadius: '8px',
-    border: '1px solid #ddd',
-    fontSize: '16px',
-    width: '100%',
-    boxSizing: 'border-box'
-};
-
-const formStyle: React.CSSProperties = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px'
-};
-
-const submitButtonStyle: React.CSSProperties = {
-    ...buttonStyle,
-    justifyContent: 'center',
-    padding: '14px',
-    backgroundColor: '#007bff',
-    color: '#fff',
-    border: 'none',
-    marginTop: '10px'
-};
-
-const backButtonStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    color: '#666',
-    marginBottom: '20px',
-    padding: 0
-};

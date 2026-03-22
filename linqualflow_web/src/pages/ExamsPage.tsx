@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 import { getUserExams, startExam } from "../api/exams"
 
 import type { ExamResponseAllFields } from "../types/exams"
+import {backButtonStyle} from "../components/Styles"
+import {ArrowLeft} from 'lucide-react';
 
 export default function ExamsPage(){
 
@@ -46,7 +48,13 @@ export default function ExamsPage(){
     return(
 
         <div>
-
+            <button
+                onClick={() => navigate('/')}
+                style={backButtonStyle}
+            >
+                <ArrowLeft size={20} />
+                {"Back to Dashboard"}
+            </button>
             <h1>Exams</h1>
 
             <button onClick={handleStart}>
@@ -84,7 +92,6 @@ export default function ExamsPage(){
                 </tbody>
 
             </table>
-
         </div>
 
     )

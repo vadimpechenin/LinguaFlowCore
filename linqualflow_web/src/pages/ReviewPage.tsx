@@ -186,7 +186,7 @@ export default function ReviewPage() {
                         variant="contained"
                         onClick={() => navigate("/")}
                     >
-                        Back to menu
+                        Back to dashboard
                     </Button>
 
                 </Box>

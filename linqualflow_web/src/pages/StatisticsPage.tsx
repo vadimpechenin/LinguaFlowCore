@@ -10,6 +10,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import type {ProgressSummary} from "../types/statistics"
 import {getSummaryStatistics} from "../api/review";
+import {backButtonStyle, centerStyle, cardStyle, valueStyle, gridStyle, iconWrapperStyle} from "../components/Styles";
 
 export default function StatisticsPage() {
     const navigate = useNavigate();
@@ -35,9 +36,12 @@ export default function StatisticsPage() {
 
     return (
         <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-            {/* Кнопка назад */}
-            <button onClick={() => navigate('/')} style={backButtonStyle}>
-                <ArrowLeft size={20} /> Back to menu
+            <button
+                onClick={() => navigate('/')}
+                style={backButtonStyle}
+            >
+                <ArrowLeft size={20} />
+                {"Back to Dashboard"}
             </button>
 
             <h1 style={{ marginBottom: '30px' }}>Your Learning Progress</h1>
@@ -85,56 +89,3 @@ export default function StatisticsPage() {
     );
 }
 
-// Стили
-const gridStyle: React.CSSProperties = {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-    gap: '20px',
-};
-
-const cardStyle: React.CSSProperties = {
-    padding: '24px',
-    backgroundColor: '#fff',
-    borderRadius: '16px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-    textAlign: 'center',
-    border: '1px solid #eee',
-};
-
-const iconWrapperStyle = (bgColor: string): React.CSSProperties => ({
-    width: '50px',
-    height: '50px',
-    borderRadius: '12px',
-    backgroundColor: bgColor,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: '0 auto 15px auto',
-});
-
-const valueStyle: React.CSSProperties = {
-    fontSize: '2rem',
-    fontWeight: 'bold',
-    margin: '10px 0 0 0',
-    color: '#333',
-};
-
-const centerStyle: React.CSSProperties = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '80vh',
-};
-
-const backButtonStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    color: '#666',
-    marginBottom: '20px',
-    fontSize: '1rem'
-};

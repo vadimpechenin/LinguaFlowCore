@@ -1,5 +1,9 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { register } from "../api/auth";
+import {backButtonStyle} from "../components/Styles";
+import { useNavigate } from "react-router-dom";
+import {ArrowLeft} from 'lucide-react';
+
 
 export default function RegisterPage() {
     const [name,setName] = useState("");
@@ -7,6 +11,7 @@ export default function RegisterPage() {
     const [email,setEmail] = useState("");
     const [password,setPassword] = useState("");
     const [initiallevel,setInitiallevel] = useState("");
+    const navigate = useNavigate()
 
     const handleSubmit = async (e:any) => {
 
@@ -27,7 +32,13 @@ export default function RegisterPage() {
     return (
 
         <div>
-
+            <button
+                onClick={() => navigate('/')}
+                style={backButtonStyle}
+            >
+                <ArrowLeft size={20} />
+                {"Back to Dashboard"}
+            </button>
             <h2>Register</h2>
 
             <form onSubmit={handleSubmit}>

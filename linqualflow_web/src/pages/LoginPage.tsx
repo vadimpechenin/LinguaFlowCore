@@ -1,7 +1,9 @@
-import { useState, useContext } from "react";
+import React, { useState, useContext } from "react";
 import { login } from "../api/auth";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom"
+import {backButtonStyle} from "../components/Styles"
+import {ArrowLeft} from 'lucide-react';
 
 export default function LoginPage() {
 
@@ -40,7 +42,13 @@ export default function LoginPage() {
     return (
 
         <div>
-
+            <button
+                onClick={() => navigate('/')}
+                style={backButtonStyle}
+            >
+                <ArrowLeft size={20} />
+                {"Back to Dashboard"}
+            </button>
             <h2>Login</h2>
 
             <form onSubmit={handleSubmit}>
@@ -58,11 +66,11 @@ export default function LoginPage() {
                     onChange={e => setPassword(e.target.value)}
                 />
 
-                <button type="submit">Войти</button>
+                <button type="submit">Login</button>
 
             </form>
             <button onClick={() => navigate('/register')}>
-                Зарегистрироваться
+                Register
             </button>
         </div>
 

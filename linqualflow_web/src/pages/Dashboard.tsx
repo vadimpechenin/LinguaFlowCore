@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserCircle, LogOut, Settings } from 'lucide-react';
 import { AuthContext } from "../context/AuthContext";
-
+import {buttonStyle, logoutButtonStyle} from "../components/Styles"
 
 export default function Dashboard() {
     const navigate = useNavigate();
@@ -81,24 +81,3 @@ export default function Dashboard() {
     );
 }
 
-// Общие стили
-const buttonStyle: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '8px 16px',
-    borderRadius: '20px',
-    border: '1px solid #ddd',
-    backgroundColor: '#fff',
-    cursor: 'pointer',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    fontWeight: 500,
-    color: '#333'
-};
-
-// Стили для кнопки выхода
-const logoutButtonStyle: React.CSSProperties = {
-    ...buttonStyle,
-    color: '#d32f2f',
-    borderColor: '#ffcdd2'
-};

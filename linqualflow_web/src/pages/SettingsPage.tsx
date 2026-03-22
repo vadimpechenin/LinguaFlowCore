@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getSettings, updateSettings } from '../api/settings';
 import type { SettingResponse, SettingUpdate } from '../types/settings';
+import {ArrowLeft} from 'lucide-react';
+import {backButtonStyle} from "../components/Styles";
+
 
 export default function SettingsPage() {
     const navigate = useNavigate();
@@ -42,48 +45,52 @@ export default function SettingsPage() {
         }
     };
 
-    if (loading) return <div>Загрузка...</div>;
+    if (loading) return <div>Loading...</div>;
 
     return (
         <div style={{ padding: '20px', maxWidth: '500px' }}>
-            <h1>Настройки пользователя</h1>
+            <button
+                onClick={() => navigate('/')}
+                style={backButtonStyle}
+            >
+                <ArrowLeft size={20} />
+                {"Back to Dashboard"}
+            </button>
+            <h1>User Settings</h1>
             {message && <p><strong>{message}</strong></p>}
 
             <form onSubmit={handleSave}>
                 <div>
-                    <label>Язык интерфейса:</label>
+                    <label>Interface Language:</label>
                     <input name="interfacelanguage" value={settings?.interfacelanguage} onChange={handleChange} />
                 </div>
 
                 <div>
-                    <label>Язык обучения:</label>
+                    <label>Learning Language:</label>
                     <input name="learninglanguage" value={settings?.learninglanguage} onChange={handleChange} />
                 </div>
 
                 <div>
-                    <label>Дневной лимит слов:</label>
+                    <label>Daily Word Limit:</label>
                     <input type="number" name="dailywordlimit" value={settings?.dailywordlimit} onChange={handleChange} />
                 </div>
 
                 <div>
                     <label>
                         <input type="checkbox" name="enableaudio" checked={settings?.enableaudio} onChange={handleChange} />
-                        Включить аудио
+                        Enable Audio
                     </label>
                 </div>
 
                 <div>
                     <label>
                         <input type="checkbox" name="enablenotifications" checked={settings?.enablenotifications} onChange={handleChange} />
-                        Уведомления
+                        Notifications
                     </label>
                 </div>
 
                 <div style={{ marginTop: '20px' }}>
-                    <button type="submit">Изменить настройки</button>
-                    <button type="button" onClick={() => navigate('/')} style={{ marginLeft: '10px' }}>
-                        Вернуться на главную
-                    </button>
+                    <button type="submit">Change Settings</button>
                 </div>
             </form>
         </div>

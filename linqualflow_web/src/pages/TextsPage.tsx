@@ -4,6 +4,8 @@ import {
     loadText, submitText, analyzeText
 } from "../api/texts";
 import type {TextAnalyzeRequest, TextAnalyzeResponse, TextRequest} from "../types/texts";
+import {backButtonStyle, buttonStyle} from "../components/Styles";
+import {ArrowLeft} from 'lucide-react';
 
 type ViewMode = 'MENU' | 'SUBMIT' | 'LOAD' | 'ANALYZE';
 
@@ -55,14 +57,14 @@ export default function TextsPage() {
                 if (foundTitle && bodyLines.length > 0) {
                     setTitle(foundTitle);
                     setContent(bodyLines.join("\n"));
-                    setStatus("Файл успешно прочитан");
+                    setStatus("The file was read successfully");
                     foundAny = true;
                     break;
                 }
             }
 
             if (!foundAny) {
-                setStatus("Ошибка: проверьте наличие 'Title:' и '=== END ==='");
+                setStatus("Error: Check availability 'Title:' and '=== END ==='");
             }
         };
 
@@ -73,37 +75,37 @@ export default function TextsPage() {
         try {
             const payload: TextRequest = { title, content, language };
             await submitText(payload);
-            alert("Успешно отправлено!");
+            alert("Successfully sent!");
             setMode('MENU');
         } catch (e) {
-            alert("Ошибка при отправке");
+            alert("Error sending");
         }
     };
 
     // 1. Метод загрузки текста
     const handleLoadText = async () => {
         try {
-            setStatus('Загрузка...');
+            setStatus('Loading...');
             const data = await loadText(title);
             setContent(data.content);
-            setStatus(`Текст "${data.title}" найден.`);
+            setStatus(`"${data.title}" text found.`);
         } catch (e) {
             setContent('');
-            setStatus('Ошибка: текст не найден.');
+            setStatus('Error: text not found.');
         }
     };
 
     // 2. Метод анализа текста
     const handleAnalyzeText = async () => {
         try {
-            setStatus('Анализируем...');
+            setStatus('Analysis in progress...');
             const payload: TextAnalyzeRequest = { title};
             const data = await analyzeText(payload);
             setAnalysisResult(data);
-            setStatus('Анализ завершен успешно.');
+            setStatus('The analysis was completed successfully.');
         } catch (e) {
             setAnalysisResult(null);
-            setStatus('Ошибка при анализе текста.');
+            setStatus('Error while parsing text.');
         }
     };
 
@@ -118,52 +120,80 @@ export default function TextsPage() {
         <div style={{ padding: '20px' }}>
             {mode === 'MENU' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '250px' }}>
-                    <button onClick={() => setMode('SUBMIT')}>Загрузить файл (.txt)</button>
-                    <button onClick={() => setMode('LOAD')}>Прочитать текст</button>
-                    <button onClick={() => setMode('ANALYZE')}>Анализировать текст</button>
+                    <button
+                        onClick={() => navigate('/')}
+                        style={backButtonStyle}
+                    >
+                        <ArrowLeft size={20} />
+                        {"Back to Dashboard"}
+                    </button>
                     <hr />
-                    <button onClick={() => navigate('/')}>В главное меню</button>
+                    <button onClick={() => setMode('SUBMIT')} style={buttonStyle}>
+                        <span>Load file (.txt)</span>
+                    </button>
+                    <button onClick={() => setMode('LOAD')} style={buttonStyle}>
+                        <span>Read text</span>
+                        </button>
+                    <button onClick={() => setMode('ANALYZE')} style={buttonStyle}>
+                        <span>Analyze text</span>
+                        </button>
                 </div>
             )}
 
             {mode === 'SUBMIT' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '500px' }}>
-                    <h3>Загрузка и парсинг файла</h3>
-                    <input type="file" accept=".txt" onChange={handleFileChange} />
+                    <h3>Downloading and parsing a file</h3>
+                    {/* Скрываем стандартный инпут через ref */}
+                    <input
+                        type="file"
+                        id="file-upload"
+                        style={{ display: 'none' }}
+                        onChange={handleFileChange}
+                    />
 
-                    <label>Язык текста:</label>
+                    {/* Рисуем свою кнопку, которая кликает по скрытому инпуту */}
+                    <button
+                        style={buttonStyle}
+                        onClick={() => document.getElementById('file-upload')?.click()}
+                    >
+                        Select file .txt
+                    </button>
+
+                    {/* Показываем имя файла, если он выбран (опционально) */}
+                    {status && <p style={{ color: 'gray', fontSize: '0.9em' }}>{status}</p>}
+                    <label>Text language:</label>
                     <input value={language} onChange={e => setLanguage(e.target.value)} placeholder="Напр: en" />
 
-                    <label>Заголовок (из файла):</label>
+                    <label>Header (from file):</label>
                     <input value={title} readOnly style={{ background: '#f0f0f0' }} />
 
-                    <label>Контент (превью):</label>
+                    <label>Content (preview):</label>
                     <textarea value={content} readOnly rows={5} style={{ background: '#f0f0f0' }} />
 
                     <p style={{ color: 'gray', fontSize: '0.9em' }}>{status}</p>
 
-                    <button disabled={!title || !content} onClick={handleSubmitText}>Отправить на сервер</button>
-                    <button onClick={reset}>Назад</button>
+                    <button disabled={!title || !content} onClick={handleSubmitText}>Send to server</button>
+                    <button onClick={reset}>Back</button>
                 </div>
             )}
 
             {/* ЭКРАН LOAD (Прочитать текст) */}
             {mode === 'LOAD' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', maxWidth: '600px' }}>
-                    <h3>Просмотр текста</h3>
+                    <h3>View text</h3>
                     <div style={{ display: 'flex', gap: '10px' }}>
                         <input
-                            placeholder="Введите название текста"
+                            placeholder="Enter the title of the text"
                             value={title}
                             onChange={e => setTitle(e.target.value)}
                             style={{ flex: 1, padding: '5px' }}
                         />
-                        <button onClick={handleLoadText}>Отправить запрос</button>
+                        <button onClick={handleLoadText}>Send a request</button>
                     </div>
 
                     {content && (
                         <div style={{ marginTop: '10px' }}>
-                            <label>Содержимое:</label>
+                            <label>Content:</label>
                             <textarea
                                 value={content}
                                 readOnly
@@ -173,32 +203,32 @@ export default function TextsPage() {
                         </div>
                     )}
                     <p style={{ color: status.includes('Ошибка') ? 'red' : 'blue' }}>{status}</p>
-                    <button onClick={reset} style={{ alignSelf: 'flex-start' }}>Назад</button>
+                    <button onClick={reset} style={{ alignSelf: 'flex-start' }}>Back</button>
                 </div>
             )}
 
             {/* ЭКРАН ANALYZE (Анализ) */}
             {mode === 'ANALYZE' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', maxWidth: '600px' }}>
-                    <h3>Анализ сложности текста</h3>
+                    <h3>Text complexity analysis</h3>
                     <div style={{ display: 'flex', gap: '10px' }}>
                         <input
-                            placeholder="Название текста для анализа"
+                            placeholder="Title of the text to be analyzed"
                             value={title}
                             onChange={e => setTitle(e.target.value)}
                             style={{ flex: 1, padding: '5px' }}
                         />
-                        <button onClick={handleAnalyzeText}>Запустить анализ</button>
+                        <button onClick={handleAnalyzeText}>Run analysis</button>
                     </div>
 
                     {analysisResult && (
                         <div style={{ background: '#f0f4f8', padding: '15px', borderRadius: '8px', marginTop: '10px' }}>
-                            <h4 style={{ margin: '0 0 10px 0' }}>Результаты для: {analysisResult.title}</h4>
-                            <p><b>Уровень:</b> {analysisResult.level}</p>
-                            <p><b>Незнакомых слов:</b> {analysisResult.unknown_words}</p>
-                            <p><b>Покрытие:</b> {analysisResult.coveragepercent}%</p>
+                            <h4 style={{ margin: '0 0 10px 0' }}>Results for: {analysisResult.title}</h4>
+                            <p><b>Level</b> {analysisResult.level}</p>
+                            <p><b>Unknown words:</b> {analysisResult.unknown_words}</p>
+                            <p><b>Coverage:</b> {analysisResult.coveragepercent}%</p>
 
-                            <p><b>Рекомендованные слова:</b></p>
+                            <p><b>Recommended words:</b></p>
                             <ul style={{
                                 display: 'grid',
                                 gridTemplateColumns: '1fr 1fr',
@@ -212,7 +242,7 @@ export default function TextsPage() {
                         </div>
                     )}
                     <p style={{ color: status.includes('Ошибка') ? 'red' : 'blue' }}>{status}</p>
-                    <button onClick={reset} style={{ alignSelf: 'flex-start' }}>Назад</button>
+                    <button onClick={reset} style={{ alignSelf: 'flex-start' }}>Back</button>
                 </div>
             )}
 
