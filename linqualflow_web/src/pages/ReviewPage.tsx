@@ -168,7 +168,7 @@ export default function ReviewPage() {
                                     {r.word.textl}
                                 </TableCell>
 
-                                <TableCell>
+                                <TableCell style={{ color: r.correct ? "inherit" : "red", fontWeight: r.correct ? "normal" : "bold" }}>
                                     {r.correct ? "✔ Correct" : "✘ Wrong"}
                                 </TableCell>
 
