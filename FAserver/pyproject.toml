@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "lingualflowserver"
+version = "0.1.0"
+description = "Main server of LingualFlow project"
+authors = ["Pechenin Vadim <vadim.pechenin2015@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.15"
+sqlalchemy = "1.4.17"
+psycopg2 = "2.9.11"
+pydantic = "2.11.7"
+passlib = "1.7.4"
+pytest = "8.4.1"
+httpx = "0.28.1"
+python-jose = "3.5.0"
+sentence-transformers = "5.2.0"
+spacy = "3.8.11"
+fastapi = "0.115.14"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

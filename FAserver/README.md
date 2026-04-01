@@ -6,6 +6,10 @@ bush:
 
 uvicorn app.main:app --reload 
 
+or
+
+uvicorn app.main:app --reload 
+
 Open:
 
 http://127.0.0.1:8000/docs
