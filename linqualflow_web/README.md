@@ -1,4 +1,4 @@
-# LinguaFlowCore fron in web
+# LinguaFlowCore front in web
 A project to create a tool for working in English to memorize words and phrases. Front end by node.js (React, TypeScript).
 
 ## 1 General concept of the project
