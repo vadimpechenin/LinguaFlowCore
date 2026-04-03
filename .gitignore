@@ -247,3 +247,4 @@ weights_for_ML/cerf_predictor.pkl
 weights_for_ML/difficulty_predictor.pkl
 weights_for_ML/recommender.pkl
 ServerVenv
+FAserver/tests/resources
