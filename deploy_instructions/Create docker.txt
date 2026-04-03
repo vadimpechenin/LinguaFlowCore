@@ -1,0 +1,129 @@
+I Backend
+
+0)Run 
+>python deploy/sentence_transformers_cache_filling.py
+
+The script will download the model files to test/resources/sentence_transformers_cache
+
+>poetry self add poetry-plugin-export
+>poetry export -f requirements.txt --without-hashes > deploy/requirements.txt
+
+Withou NVIDIA
+
+>poetry export -f requirements.txt --output deploy/requirements.txt --without-hashes --without dev
+
+>Select-String "nvidia" deploy/requirements.txt
+
+1) In LinguaFlowCore/FAserver/ create Dockerfile:
+FROM python:3.11-slim-bookworm
+WORKDIR /app
+
+# Добавляем инструменты сборки и библиотеки для Postgres
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY ./deploy/requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
+RUN rm -f /app/requirements.txt
+# Специально из за строки nlp = spacy.load("en_core_web_sm")
+RUN python -m spacy download en_core_web_sm
+
+COPY app /app/app
+
+# Переменные используемые сервисом, не удалять
+ENV SENTENCE_TRANSFORMERS_CACHE=/sentence_transformers_cache
+ENV HF_HUB_OFFLINE=1
+ENV SENTENCE_TRANSFORMERS_HOME=$SENTENCE_TRANSFORMERS_CACHE
+
+#Пути к данным
+ARG SENTENCE_TRANSFORMERS_CACHE_SRC=tests/resources/sentence_transformers_cache
+
+RUN mkdir $SENTENCE_TRANSFORMERS_CACHE
+
+COPY $SENTENCE_TRANSFORMERS_CACHE_SRC/ $SENTENCE_TRANSFORMERS_CACHE/
+
+EXPOSE 8000
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+
+2) Create .dockerignore file in this path:
+.venv
+.git
+.vscode
+__pycache__
+*.pyc
+tests/
+README.md
+LICENSE
+
+3) bash (in virtual environment of poetry!!!):
+>docker build --network host -t linquaflow-backend -f deploy/Dockerfile .
+>docker build -t linquaflow-backend -f deploy/Dockerfile .
+
+if error
+
+>docker build --no-cache -t linguaflow-backend .
+
+4) RUN 
+
+#internal db:
+docker run -d -p 8000:8000 --name lfc-backend --add-host=host.docker.internal:host-gateway linquaflow-backend
+
+# external db:
+docker run -d -p 8000:8000 --name linquaflow-backend -e DATABASE_URL=postgresql+psycopg2://postgres:mapr@host.docker.internal:5432/lfc --add-host=host.docker.internal:host-gateway linquaflow-backend
+II Build frontend
+
+1) Dockerfile in /deploy/
+# Stage 1: Сборка
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+# RUN npm run build
+# Пропускаем tsc (проверку типов) и запускаем только билд Vite
+RUN npx vite build
+
+# Stage 2: Раздача статики
+FROM nginx:stable-alpine
+# Копируем билд из первого этапа
+COPY --from=build /app/dist /usr/share/nginx/html
+# Копируем конфиг Nginx (важно для React Router)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+
+2) Create .dockerignore file in this path:
+node_modules
+dist
+build
+.git
+.env
+
+3) create nginx.conf in root of project
+server {
+    listen 80;
+    location / {
+        root /usr/share/nginx/html;
+        index index.html;
+        try_files $uri $uri/ /index.html;
+    }
+}
+
+4) build image
+>docker build -t linquaflow-frontend -f deploy/Dockerfile .
+
+and view it after success build
+
+>docker images
+
+5) run application 
+>docker run -d -p 8080:80 --name linquaflow-web linquaflow-frontend
+To view logs (if the site does not open):
+>docker logs linquaflow-web
+
+6) to stop
+>docker stop linquaflow-web

@@ -1,0 +1,72 @@
+0) >poetry --version
+1) cd your_project
+vpoetry init
+
+[tool.poetry]
+name = "lingualflowserver"
+version = "0.1.0"
+description = "Main server of LingualFlow project"
+authors = ["Pechenin Vadim <vadim.pechenin2015@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+>python = "^3.11"
+
+2) Create a virtual environment within the overall project
+>python -m venv ServerVenv
+
+3) Connect to a virtual environment
+>poetry config virtualenvs.path path\ServerVenv
+or within the project
+>poetry config virtualenvs.in-project true
+
+4) >poetry show -v
+>poetry lock
+
+5) Adding all libraries
+in .toml
+//
+[tool.poetry.dependencies]
+python = ">=3.11,<3.15"
+//
+poetry add fastapi==0.115.14
+
+poetry add SQLAlchemy==1.4.17
+
+poetry add psycopg2==2.9.11
+
+poetry add pydantic==2.11.7
+
+poetry add passlib==1.7.4
+
+poetry add pytest==8.4.1
+
+poetry add httpx==0.28.1
+
+poetry add python-jose==3.5.0
+
+poetry add spacy==3.8.11
+
+poetry add sentence-transformers==5.2.0
+
+poetry add uvicorn==0.42.0
+
+//Additional, without gpu
+poetry remove torch
+poetry add --platform linux https://pytorch.org
+//
+
+poetry run python -m spacy download en_core_web_sm //-> python -m spacy download en_core_web_sm
+or 
+poetry add https://github.com
+
+
+6) In PyCharm add poetry interpretator:
+\LinguaFlowCore\ServerVenv\lingualflowserver-YJ3ZOA3u-py3.11\Scripts\python.exe
+
+7) Launching the application
+
+>poetry shell
+or running commands without activation:
+>poetry run uvicorn app.main:app --reload
