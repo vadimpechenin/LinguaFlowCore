@@ -26,6 +26,11 @@ name = "pytorch-cpu"
 url = "https://pytorch.org"
 priority = "explicit"
 
+
+[[tool.poetry.source]]
+name = "PyPI"
+priority = "supplemental"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

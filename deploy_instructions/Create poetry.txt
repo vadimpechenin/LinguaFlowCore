@@ -46,6 +46,8 @@ poetry add httpx==0.28.1
 
 poetry add python-jose==3.5.0
 
+poetry add pandas==2.2.3 
+
 poetry add spacy==3.8.11
 
 poetry add sentence-transformers==5.2.0
