@@ -1,6 +1,6 @@
 0) >poetry --version
 1) cd your_project
-vpoetry init
+>poetry init
 
 [tool.poetry]
 name = "lingualflowserver"
@@ -53,6 +53,10 @@ poetry add spacy==3.8.11
 poetry add sentence-transformers==5.2.0
 
 poetry add uvicorn==0.42.0
+
+poetry add scikit-learn==1.2.2
+
+poetry add numpy=1.26.0
 
 //Additional, without gpu
 poetry remove torch
