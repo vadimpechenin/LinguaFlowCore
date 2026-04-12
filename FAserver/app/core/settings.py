@@ -3,6 +3,12 @@ from pathlib import Path
 
 from app.core.common_utils import CommonUtils
 
+import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+WEIGHTS_DIR = os.getenv("WEIGHTS_DIR", os.path.join(BASE_DIR, "..", "weights"))
+#WEIGHTS_DIR = os.getenv("WEIGHTS_DIR", "/weights")
+
 ML_SERVICE_URL = "http://localhost:8001/ml"
 
 #Пути к весам сетей
