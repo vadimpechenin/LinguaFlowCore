@@ -127,3 +127,7 @@ To view logs (if the site does not open):
 
 6) to stop
 >docker stop linquaflow-web
+
+III Export-import
+sudo docker save -o /data/normaliser_1.0.0.3.tar normaliser:latest
+sudo docker load -i /data/normaliser_1.0.0.3.tar

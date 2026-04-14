@@ -12,6 +12,7 @@ WEIGHTS_DIR = os.getenv("WEIGHTS_DIR", os.path.join(BASE_DIR, "..", "weights"))
 ML_SERVICE_URL = "http://localhost:8001/ml"
 
 #Пути к весам сетей
+SENTENCE_NAME = "sentence_transformers_cache"
 CERF_NAME = "cerf_predictor.pkl"
 REC_NAME = "recommender.pkl"
 DIF_NAME = "difficulty_predictor.pkl"

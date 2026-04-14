@@ -1,5 +1,5 @@
 # точка входа в сервер
-
+import uvicorn
 from fastapi import FastAPI
 from app.api import auth, users, words, progress, exams, settings, texts
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,6 +10,7 @@ app = FastAPI(title="English Learning API")
 
 #Блок добавления связи с фронтэндом
 pl = 'nodocker'
+#pl = 'docker'
 if (pl=='docker'):
     origins = [
         "http://localhost:8080",
@@ -37,3 +38,6 @@ app.include_router(words.router)
 app.include_router(progress.router)
 app.include_router(settings.router)
 app.include_router(texts.router)
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
