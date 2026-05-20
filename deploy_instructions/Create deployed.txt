@@ -1,0 +1,68 @@
+To make the FastAPI server accessible from another computer over the network, three things need to be decided:
+
+1. What address the server listens on
+2. How to access it (IP/domain)
+3. Network restrictions (firewall, Docker, CORS)
+
+1. Running FastAPI on a location other than localhost
+
+>uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+
+2. Find the computer's IP address
+
+	Linux / Mac:
+	>ip a
+
+	Windows (Ethernet adapter):
+	>ipconfig
+	
+
+	Example:
+	192.168.1.42
+
+3. Test
+From another computer:
+	http://192.168.1.42:8000
+If everything is OK, you'll see FastAPI.
+
+4. If using Docker
+The Dockerfile should already contain:
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+	docker-compose:
+	services:
+	backend:
+	build: ./backend
+	ports:
+	- "8000:8000"
+This forwards the port externally.
+
+5. Frontend → Backend 
+In the frontend, you can't write:
+fetch("http://localhost:8000")
+
+You need:
+	fetch("http://192.168.1.42:8000")
+or better:
+	const API_URL = "http://192.168.1.42:8000"
+
+The best option is ENV
+	VITE_API_URL=http://192.168.1.42:8000
+
+6. CORS (required)
+In FastAPI:
+	origins = [
+	"http://192.168.1.42:5173", # frontend
+	]
+or:
+	origins = ["*"] # for testing
+
+7. Firewall (common problem)
+If it doesn't open:
+	Linux:
+		sudo ufw allow 8000
+	Windows:
+		Open port 8000 in the firewall
+		or
+		>New-NetFirewallRule -DisplayName "FastAPI 8000" -Direction Inbound -Protocol TCP -LocalPort 8000 -Action Allow

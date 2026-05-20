@@ -1,9 +1,21 @@
 import axios from "axios";
+const pl_API = 'server'
+//const pl_API = 'noserver'
+let API
 
-const API = axios.create({
-    baseURL: "http://localhost:8000",
-});
 
+if (pl_API=='server'){
+    API = axios.create({
+        baseURL:  import.meta.env.VITE_API_URL,
+    });
+
+}else{
+    API = axios.create({
+        baseURL: "http://localhost:8000",
+    });
+}
+// Выводим в консоль адрес из уже созданного объекта конфигурации
+console.log("Итоговый baseURL в Axios:", API.defaults.baseURL);
 API.interceptors.request.use((config) => {
 
     const token = localStorage.getItem("token");

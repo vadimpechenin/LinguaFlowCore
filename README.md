@@ -115,3 +115,5 @@ python -m spacy download en_core_web_sm
 sentence-transformers == 5.2.0
 
 redis == 7.3.0 #Not currently used, needed to delete tokens
+
+python-dotenv == 1.2.2
