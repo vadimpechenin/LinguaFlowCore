@@ -1,7 +1,7 @@
-import axios from "axios";
+import axios, { type AxiosInstance } from "axios";
 const pl_API = 'server'
 //const pl_API = 'noserver'
-let API
+export let API: AxiosInstance;
 
 
 if (pl_API=='server'){

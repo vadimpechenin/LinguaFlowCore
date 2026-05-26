@@ -1,5 +1,7 @@
 import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
+import { API } from "../api/api";
+
 
 interface User {
     id: string;
@@ -34,18 +36,18 @@ export const AuthProvider = ({ children }: any) => {
     }, []);
 
     const loadUser = async (token: string) => {
-
+        //alert("Token в loadUser: " + token)
         try {
 
-            const res = await axios.get(
-                "http://localhost:8000/users/me2",
+            const res = await API.get<User>(
+                "/users/me2", // URL склеится с VITE_API_URL автоматически
                 {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 }
             );
-
+            //alert("Result после me2: " + res.data)
             setUser(res.data);
 
         } catch {

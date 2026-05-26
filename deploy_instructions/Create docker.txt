@@ -69,11 +69,23 @@ if error
 
 4) RUN 
 
+Open port
+
 #internal db:
 docker run -d -p 8000:8000 --name lfc-backend --add-host=host.docker.internal:host-gateway linquaflow-backend
 
 # external db:
 docker run -d -p 8000:8000 --name linquaflow-backend -e DATABASE_URL=postgresql+psycopg2://postgres:mapr@host.docker.internal:5432/lfc --add-host=host.docker.internal:host-gateway linquaflow-backend
+
+5) to run / to stop
+>sudo docker start linquaflow-web
+>sudo docker stop linquaflow-web
+
+6) Add logs
+>docker logs -f linquaflow-backend
+
+
+
 II Build frontend
 
 1) Dockerfile in /deploy/
@@ -125,8 +137,9 @@ and view it after success build
 To view logs (if the site does not open):
 >docker logs linquaflow-web
 
-6) to stop
->docker stop linquaflow-web
+6) to run / to stop
+>sudo docker start linquaflow-web
+>sudo docker stop linquaflow-web
 
 III Export-import
 sudo docker save -o /data/normaliser_1.0.0.3.tar normaliser:latest

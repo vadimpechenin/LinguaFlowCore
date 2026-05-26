@@ -24,7 +24,7 @@ export default function LoginPage() {
                 username,
                 password
             })
-
+            //alert("Token: " + res.data.access_token)
             const token = res.data.access_token
 
             await loginUser(token)
