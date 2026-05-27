@@ -89,7 +89,7 @@ docker run -d -p 8000:8000 --name linquaflow-backend -e DATABASE_URL=postgresql+
 II Build frontend
 
 1) Dockerfile in /deploy/
-# Stage 1: Сборка
+# Stage 1: Assembly
 FROM node:20-alpine AS build
 WORKDIR /app
 COPY package*.json ./
@@ -140,6 +140,35 @@ To view logs (if the site does not open):
 6) to run / to stop
 >sudo docker start linquaflow-web
 >sudo docker stop linquaflow-web
+
+II To run with env ((client and server on different computers)
+
+difference:
+1) DOCKERFILE:
+# Stage 1: Сборка
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npx vite build
+
+# Stage 2: Раздача
+FROM nginx:stable-alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+# При старте контейнера создаем файл env-config.js внутри папки Nginx
+CMD ["/bin/sh", "-c", "echo \"window._env_ = { VITE_API_URL: '${VITE_API_URL}' };\" > /usr/share/nginx/html/env-config.js && nginx -g 'daemon off;'"]
+
+4) build image
+docker build -t linquaflow-frontend_vite_env -f deploy/Dockerfile_vite_env .
+
+5) run application 
+docker run -d -p 8080:80 --env-file .env.local linquaflow-frontend_vite_env
+
 
 III Export-import
 sudo docker save -o /data/normaliser_1.0.0.3.tar normaliser:latest
