@@ -67,6 +67,8 @@ poetry run python -m spacy download en_core_web_sm //-> python -m spacy download
 or 
 poetry add https://github.com
 
+poetry add dotenv
+poetry add --group dev pytest-cov
 
 6) In PyCharm add poetry interpretator:
 \LinguaFlowCore\ServerVenv\lingualflowserver-YJ3ZOA3u-py3.11\Scripts\python.exe

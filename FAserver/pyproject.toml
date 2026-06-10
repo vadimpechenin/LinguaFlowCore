@@ -23,7 +23,11 @@ uvicorn = "0.42.0"
 scikit-learn = "1.5.2"
 numpy = "1.26.0"
 python-dotenv = "^1.2.2"
+dotenv = "^0.9.9"
 
+
+[tool.poetry.group.dev.dependencies]
+pytest-cov = "^7.1.0"
 
 [build-system]
 requires = ["poetry-core"]
